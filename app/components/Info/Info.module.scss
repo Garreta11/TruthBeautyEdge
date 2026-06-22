@@ -1,0 +1,97 @@
+.wrapper {
+  grid-column: 12;
+  grid-row: 3;
+  align-self: start;
+  justify-self: end;
+  position: relative;
+}
+
+.trigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.24;
+  }
+}
+
+.panel {
+  position: absolute;
+  right: calc(100% + 70px);
+  bottom: 0;
+  width: calc((100dvw - 2 * var(--margin) - (var(--cols) - 1) * var(--gutter)) / var(--cols));
+  min-width: 465px;
+  z-index: 9;
+  color: white;
+  padding: 20px;
+  padding-bottom: 60px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+
+  &.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+}
+
+.body {
+
+  p {
+    margin: 0 0 0.6rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  a {
+    color: white;
+    opacity: 0.9;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  strong {
+    font-weight: 600;
+  }
+
+  em {
+    font-style: italic;
+  }
+}
+
+.close {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 300;
+  line-height: 1;
+  padding: 0;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.24;
+  }
+}

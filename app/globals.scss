@@ -1,0 +1,90 @@
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  // ─── Grid ──────────────────────────────────────────────────────────────────
+  --cols: 12;
+  --gutter: 10px;
+  --margin: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --cols: 4;
+    --gutter: 10px;
+    --margin: 10px;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+html {
+  height: 100%;
+  color-scheme: dark;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100%;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-neue-haas);
+  font-size: 20px;
+  letter-spacing: 0.05em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+  &:hover {
+    opacity: 0.24;
+  }
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+}
+
+// ─── Grid utility ────────────────────────────────────────────────────────────
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  column-gap: var(--gutter);
+  padding: var(--margin);
+  width: 100%;
+}
+
+.hover {
+  &:hover {
+    
+  }
+}

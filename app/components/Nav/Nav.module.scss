@@ -1,0 +1,39 @@
+.nav {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  width: 100dvw;
+  height: 100dvh;
+  // .grid provides 12 columns + padding-inline + column-gap
+  grid-template-rows: repeat(3, 1fr);
+  pointer-events: none;
+
+  // Only interactive children receive pointer events
+  > * {
+    pointer-events: all;
+  }
+}
+
+.desc1 {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  justify-self: start;
+  white-space: nowrap;
+}
+
+.desc2 {
+  grid-column: 12;
+  grid-row: 1;
+  align-self: end;
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.cities {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+  justify-self: start;
+  white-space: pre-wrap;
+}

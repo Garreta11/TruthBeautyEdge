@@ -1,0 +1,143 @@
+import { defineField, defineType } from 'sanity'
+
+export const siteSettings = defineType({
+  name: 'siteSettings',
+  title: 'Site Settings',
+  type: 'document',
+  __experimental_actions: ['update', 'publish'],
+  fields: [
+    // ─── Identity ──────────────────────────────────────────────────────────────
+    defineField({
+      name: 'siteName',
+      title: 'Site Name',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+
+    // ─── Assets ────────────────────────────────────────────────────────────────
+    defineField({
+      name: 'logo',
+      title: 'Logo',
+      type: 'image',
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: 'favicon',
+      title: 'Favicon',
+      description: 'Square image, ideally 512×512px',
+      type: 'image',
+    }),
+    defineField({
+      name: 'backgroundVideo',
+      title: 'Background Video',
+      description: 'Video that loops in the background across the whole site',
+      type: 'file',
+      options: { accept: 'video/*' },
+    }),
+
+    // ─── Description ───────────────────────────────────────────────────────────
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'object',
+      fields: [
+        defineField({ name: 'desc1', title: 'First sentence', type: 'string' }),
+        defineField({ name: 'desc2', title: 'Second sentence', type: 'string' }),
+      ],
+    }),
+
+    // ─── Info ──────────────────────────────────────────────────────────────────
+    defineField({
+      name: 'info',
+      title: 'Info',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'label',
+          title: 'Label',
+          type: 'string',
+        }),
+        defineField({
+          name: 'body',
+          title: 'Body',
+          type: 'array',
+          of: [
+            {
+              type: 'block',
+              styles: [{ title: 'Normal', value: 'normal' }],
+              marks: {
+                decorators: [
+                  { title: 'Bold', value: 'strong' },
+                  { title: 'Italic', value: 'em' },
+                ],
+                annotations: [
+                  {
+                    name: 'link',
+                    type: 'object',
+                    title: 'Link',
+                    fields: [
+                      defineField({ name: 'href', type: 'url', title: 'URL' }),
+                    ],
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+      ],
+    }),
+
+    // ─── Reach Out ─────────────────────────────────────────────────────────────
+    defineField({
+      name: 'reachOut',
+      title: 'Reach Out',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'label',
+          title: 'Label',
+          type: 'string',
+        }),
+        // ─── Cities ────────────────────────────────────────────────────────────────
+        defineField({
+          name: 'cities',
+          title: 'Cities',
+          type: 'array',
+          of: [
+            {
+              type: 'object',
+              fields: [
+                defineField({ name: 'city', title: 'City', type: 'string', validation: (Rule) => Rule.required() }),
+                defineField({ name: 'phone', title: 'Phone', type: 'string' }),
+              ],
+              preview: {
+                select: { title: 'city', subtitle: 'phone' },
+              },
+            },
+          ],
+        }),
+        // ─── Mail ──────────────────────────────────────────────────────────────────
+        defineField({
+          name: 'mail',
+          title: 'Mail',
+          type: 'string',
+          validation: (Rule) => Rule.email(),
+        }),
+      ],
+    }),
+    
+    // ─── Check Work ────────────────────────────────────────────────────────────
+    defineField({
+      name: 'checkWork',
+      title: 'Check Work',
+      type: 'object',
+      fields: [
+        defineField({ name: 'sentence1', title: 'First sentence', type: 'string' }),
+        defineField({ name: 'sentence2', title: 'Second sentence', type: 'string' }),
+      ],
+    })
+  ],
+  preview: {
+    select: { title: 'siteName', media: 'logo' },
+  },
+})

@@ -1,0 +1,97 @@
+.wrapper {
+  grid-column: 12;
+  grid-row: 3;
+  align-self: end;
+  justify-self: end;
+  position: relative;
+}
+
+.trigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.24;
+  }
+}
+
+.panel {
+  position: absolute;
+  right: calc(100% + 70px);
+  bottom: 0;
+  width: calc((100dvw - 2 * var(--margin) - (var(--cols) - 1) * var(--gutter)) / var(--cols));
+  min-width: 465px;
+  z-index: 9;
+  color: white;
+  padding: 20px;
+  padding-bottom: 100px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+
+  &.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tdLabel {
+  padding: 0.3rem 1.5rem 0.3rem 0;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.tdValue {
+  padding: 0.3rem 0;
+  vertical-align: middle;
+}
+
+.mailRow {
+  td {
+    padding-top: 1rem;
+    margin-top: 0.4rem;
+  }
+}
+
+.mailLink {
+  color: white;
+  text-decoration: none;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.close {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 300;
+  line-height: 1;
+  padding: 0;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.24;
+  }
+}
