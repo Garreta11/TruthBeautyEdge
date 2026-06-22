@@ -54,7 +54,8 @@ $gap: 10px;
 
 .cellText {
   background-color: black;
-  width: 474px;
+  /* width: 474px; */
+  aspect-ratio: 16 / 9;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -62,5 +63,6 @@ $gap: 10px;
 }
 
 .cellContainer {
-  max-width: 271px;
+  /* max-width: 271px; */
+  width: 70%;
 }
