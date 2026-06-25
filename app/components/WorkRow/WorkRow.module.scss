@@ -1,11 +1,17 @@
-$row-height: calc(100dvh / 3);
+$row-height: calc(100dvh / 2);
 $gap: 10px;
 
 .row {
   display: flex;
   flex-direction: column;
   height: $row-height;
-  padding-block: 10px;
+  padding-block: 5px;
+
+  filter: brightness(0.3);
+  transition: all ease 0.7s;
+  &:hover {
+    filter: brightness(1);
+  }
 }
 
 .strip {
