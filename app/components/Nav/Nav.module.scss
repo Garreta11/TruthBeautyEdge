@@ -12,6 +12,12 @@
   > * {
     pointer-events: all;
   }
+
+  @media (max-width: 768px) {
+    // Text is sized down on mobile; cascades to WorkRequest/Info/ReachOut too
+    font-size: 0.7rem;
+    row-gap: 8px;
+  }
 }
 
 .desc1 {
@@ -20,6 +26,11 @@
   align-self: start;
   justify-self: start;
   white-space: nowrap;
+
+  @media (max-width: 768px) {
+    white-space: normal;
+    max-width: 48vw;
+  }
 }
 
 .desc2 {
@@ -28,6 +39,12 @@
   align-self: end;
   justify-self: end;
   white-space: nowrap;
+
+  @media (max-width: 768px) {
+    white-space: normal;
+    max-width: 48vw;
+    text-align: right;
+  }
 }
 
 .cities {
@@ -36,4 +53,10 @@
   align-self: end;
   justify-self: start;
   white-space: pre-wrap;
+
+  @media (max-width: 768px) {
+    max-width: 90vw;
+    // Shrink the tab gap between joined city names so the list wraps sooner
+    tab-size: 2;
+  }
 }

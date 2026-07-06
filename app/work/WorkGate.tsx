@@ -14,13 +14,24 @@ export default function WorkGate({ children }: Props) {
   const [error, setError] = useState(false)
   const gateRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const sentenceRef = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
-    gsap.fromTo(
-      gateRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.8, delay: 0.3, ease: 'power3.out' }
-    )
+    const items = sentenceRef.current ? Array.from(sentenceRef.current.children) : []
+
+    gsap
+      .timeline()
+      .fromTo(
+        gateRef.current,
+        { clipPath: 'circle(0% at 0% 50%)' },
+        { clipPath: 'circle(150% at 0% 50%)', duration: 0.65, delay: 0.3, ease: 'power3.out' }
+      )
+      .fromTo(
+        items,
+        { opacity: 0, y: 8 },
+        { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out', stagger: 0.08 },
+        '-=0.4'
+      )
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -30,8 +41,7 @@ export default function WorkGate({ children }: Props) {
       gsap
         .timeline()
         .to(gateRef.current, {
-          opacity: 0,
-          y: -16,
+          clipPath: 'circle(0% at 0% 50%)',
           duration: 0.45,
           ease: 'power2.in',
         })
@@ -66,8 +76,8 @@ export default function WorkGate({ children }: Props) {
     <>
       <div ref={gateRef} className={styles.gate}>
         <form onSubmit={handleSubmit} className={styles.form}>
-          <p className={styles.sentence}>
-            Insert code
+          <p className={styles.sentence} ref={sentenceRef}>
+            <span>Insert code</span>
             <input
               type="password"
               value={password}
@@ -78,7 +88,7 @@ export default function WorkGate({ children }: Props) {
               className={`${styles.input} ${error ? styles.error : ''}`}
               autoFocus
             />
-            to view past work
+            <span>to view past work</span>
           </p>
         </form>
       </div>

@@ -10,7 +10,7 @@
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
   border-radius: 40px;
-  opacity: 0;
+  clip-path: circle(0% at 0% 50%);
 }
 
 .form {
