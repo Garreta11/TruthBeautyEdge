@@ -27,6 +27,7 @@
   justify-self: end;
   white-space: nowrap;
   text-align: right;
+  color: white;
 
   @media (max-width: 768px) {
     white-space: normal;
@@ -43,6 +44,7 @@
   align-items: center;
   gap: 30px;
   white-space: nowrap;
+  color: white;
 }
 
 .nav__info {
@@ -50,6 +52,7 @@
   grid-row: 2;
   align-self: end;
   justify-self: end;
+  color: white;
 }
 
 .nav__cities {
@@ -60,6 +63,7 @@
   display: flex;
   gap: 30px;
   white-space: nowrap;
+  color: white;
 
   @media (max-width: 768px) {
     white-space: normal;
@@ -72,4 +76,5 @@
   grid-row: 3;
   align-self: end;
   justify-self: end;
+  color: white;
 }
