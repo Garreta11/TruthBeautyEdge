@@ -5,6 +5,7 @@ import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { OldProject, MediaItem } from '@/sanity/lib/types'
 import { urlFor } from '@/sanity/lib/image'
 import { usePanel } from '@/app/context/PanelContext'
+import VideoPlayer from '@/app/components/VideoPlayer/VideoPlayer'
 import styles from './WorkRow.module.scss'
 
 
@@ -39,7 +40,7 @@ function MediaCell({ item }: { item: MediaItem }) {
     if (fileSrc) {
       return (
         <div className={styles.cell}>
-          <video src={fileSrc} autoPlay muted loop playsInline />
+          <VideoPlayer src={fileSrc} />
         </div>
       )
     }
