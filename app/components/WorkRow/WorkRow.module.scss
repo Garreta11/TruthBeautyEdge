@@ -8,9 +8,16 @@ $gap: 10px;
   padding-block: 5px;
 
   filter: brightness(0.3);
-  transition: all ease 0.7s;
+  transition: var(--transition);
+
+  opacity: 0;
+
   &:hover {
     filter: brightness(1);
+  }
+
+  &.locked:hover {
+    filter: brightness(0.3);
   }
 }
 
@@ -23,11 +30,6 @@ $gap: 10px;
   overflow-x: scroll;
   overflow-y: hidden;
   scrollbar-width: none;
-  cursor: grab;
-
-  &:active {
-    cursor: grabbing;
-  }
 
   &::-webkit-scrollbar {
     display: none;

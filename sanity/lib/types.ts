@@ -51,22 +51,19 @@ export type PortableTextBlock = unknown[]
 export interface SiteSettings {
   _id: string
   siteName: string
-  description?: {
-    desc1?: string
-    desc2?: string
-  }
+  description?: string
   info?: {
     label?: string
     body?: PortableTextBlock
-  }
-  checkWork?: {
-    sentence1?: string
-    sentence2?: string
   }
   reachOut?: {
     label?: string
     cities?: { city: string; phone?: string }[]
     mail?: string
+  }
+  checkWork?: {
+    label?: string
+    createdWith?: string
   }
   logoUrl?: string
   favicon?: SanityImageSource

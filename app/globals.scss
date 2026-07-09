@@ -2,6 +2,10 @@
   --background: #ffffff;
   --foreground: #171717;
 
+  // ─── Animation ─────────────────────────────────────────────────────────────
+  --transition: all 1s ease;
+
+
   // ─── Grid ──────────────────────────────────────────────────────────────────
   --cols: 12;
   --gutter: 10px;
@@ -53,6 +57,11 @@ body {
   letter-spacing: 0.05em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-biz-ud-mincho);
+  font-weight: normal;
 }
 
 a {

@@ -1,0 +1,57 @@
+.gate {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  opacity: 0;
+}
+
+.request {
+  color: white;
+  opacity: 0.24;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: var(--transition);
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.form {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.input {
+  text-align: center;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.24);
+  outline: none;
+  color: white;
+  width: 134px;
+  padding: 0;
+
+  &.error {
+    border-bottom-color: #ff6b6b;
+  }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.enter {
+  background: none;
+  border: none;
+  color: white;
+  opacity: 0.24;
+  cursor: pointer;
+  padding: 0;
+  transition: var(--transition);
+
+  &:hover {
+    opacity: 1;
+  }
+}

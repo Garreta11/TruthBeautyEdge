@@ -16,47 +16,60 @@
   @media (max-width: 768px) {
     // Text is sized down on mobile; cascades to WorkRequest/Info/ReachOut too
     font-size: 0.7rem;
-    row-gap: 8px;
+    row-gap: 10px;
   }
 }
 
-.desc1 {
-  grid-column: 1;
-  grid-row: 1;
-  align-self: start;
-  justify-self: start;
-  white-space: nowrap;
-
-  @media (max-width: 768px) {
-    white-space: normal;
-    max-width: 48vw;
-  }
-}
-
-.desc2 {
+.nav__description {
   grid-column: 12;
   grid-row: 1;
   align-self: end;
   justify-self: end;
   white-space: nowrap;
+  text-align: right;
 
   @media (max-width: 768px) {
     white-space: normal;
     max-width: 48vw;
-    text-align: right;
   }
 }
 
-.cities {
+.nav__view_work {
   grid-column: 1;
   grid-row: 2;
   align-self: end;
   justify-self: start;
-  white-space: pre-wrap;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  white-space: nowrap;
+}
+
+.nav__info {
+  grid-column: 12;
+  grid-row: 2;
+  align-self: end;
+  justify-self: end;
+}
+
+.nav__cities {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: end;
+  justify-self: start;
+  display: flex;
+  gap: 30px;
+  white-space: nowrap;
 
   @media (max-width: 768px) {
-    max-width: 90vw;
-    // Shrink the tab gap between joined city names so the list wraps sooner
-    tab-size: 2;
+    white-space: normal;
+    max-width: 48vw;
   }
+}
+
+.nav__reach_out {
+  grid-column: 12;
+  grid-row: 3;
+  align-self: end;
+  justify-self: end;
 }

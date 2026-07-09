@@ -1,10 +1,25 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
-import { PortableText } from '@portabletext/react'
+import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { OldProject, MediaItem } from '@/sanity/lib/types'
 import { urlFor } from '@/sanity/lib/image'
+import { usePanel } from '@/app/context/PanelContext'
 import styles from './WorkRow.module.scss'
+
+
+const components: PortableTextComponents = {
+  block: {
+    h1: ({ children }) => <h1>{children}</h1>,
+    h2: ({ children }) => <h2>{children}</h2>,
+    h3: ({ children }) => <h3>{children}</h3>,
+    h4: ({ children }) => <h4>{children}</h4>,
+    normal: ({ children }) => <p>{children}</p>,
+    blockquote: ({ children }) => (
+      <blockquote>{children}</blockquote>
+    ),
+  },
+}
 
 function MediaCell({ item }: { item: MediaItem }) {
   if (item._type === 'mediaImage') {
@@ -44,7 +59,7 @@ function MediaCell({ item }: { item: MediaItem }) {
     return (
       <div className={`${styles.cell} ${styles.cellText}`}>
         <div className={styles.cellContainer}>
-          <PortableText value={item.body} />
+          <PortableText value={item.body as Parameters<typeof PortableText>[0]['value']} components={components} />
         </div>
       </div>
     )
@@ -59,6 +74,7 @@ interface Props {
 
 export default function WorkRow({ project }: Props) {
   const stripRef = useRef<HTMLDivElement>(null)
+  const { openPanel } = usePanel()
 
   useEffect(() => {
     const el = stripRef.current
@@ -79,7 +95,7 @@ export default function WorkRow({ project }: Props) {
   }
 
   return (
-    <div className={styles.row}>
+    <div data-work-row className={`${styles.row} ${openPanel ? styles.locked : ''}`}>
       <div className={styles.strip} ref={stripRef} onScroll={handleScroll} data-lenis-prevent>
         {[0, 1, 2].map((copy) =>
           project.media?.map((item) => (

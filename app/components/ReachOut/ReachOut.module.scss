@@ -1,74 +1,3 @@
-.wrapper {
-  grid-column: 12;
-  grid-row: 3;
-  align-self: end;
-  justify-self: end;
-  position: relative;
-}
-
-.trigger {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: white;
-  transition: opacity 0.2s ease;
-
-  &:hover {
-    opacity: 0.24;
-  }
-}
-
-.panel {
-  position: absolute;
-  right: calc(100% + 70px);
-  bottom: 0;
-  width: calc((100dvw - 2 * var(--margin) - (var(--cols) - 1) * var(--gutter)) / var(--cols));
-  min-width: 465px;
-  z-index: 9;
-  color: white;
-  padding: 20px;
-  padding-bottom: 100px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 22px;
-
-  opacity: 0;
-  transform: translateY(8px);
-  pointer-events: none;
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-
-  &.open {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: all;
-  }
-
-  @media (min-width: 769px) {
-    // Bubble open: grows out from the trigger corner instead of fading in place
-    opacity: 1;
-    transform: none;
-    transform-origin: bottom right;
-    clip-path: circle(0% at 100% 100%);
-    transition: clip-path 0.55s cubic-bezier(0.16, 1, 0.3, 1);
-
-    &.open {
-      clip-path: circle(150% at 100% 100%);
-    }
-  }
-
-  @media (max-width: 768px) {
-    position: fixed;
-    left: var(--margin);
-    right: var(--margin);
-    bottom: var(--margin);
-    width: auto;
-    min-width: 0;
-    max-height: 70dvh;
-    overflow-y: auto;
-  }
-}
-
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -76,21 +5,12 @@
   // Rows fade/slide in one after another while the panel opens
   tr {
     opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.35s ease, transform 0.35s ease;
+    transition: var(--transition);
   }
 }
 
-.panel.open .table tr {
+[data-open='true'] .table tr {
   opacity: 1;
-  transform: translateY(0);
-}
-
-@for $i from 1 through 10 {
-  .panel.open .table tr:nth-child(#{$i}) {
-    // Text starts once the bubble is already growing, then staggers in
-    transition-delay: #{0.06 * $i + 0.25}s;
-  }
 }
 
 .tdLabel {
@@ -115,25 +35,5 @@
   color: white;
   text-decoration: none;
   opacity: 1;
-  transition: opacity 0.2s ease;
-}
-
-.close {
-  position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: white;
-  font-size: 1.8rem;
-  font-weight: 300;
-  line-height: 1;
-  padding: 0;
-  opacity: 1;
-  transition: opacity 0.2s ease;
-
-  &:hover {
-    opacity: 0.24;
-  }
+  transition: var(--transition);
 }

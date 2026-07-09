@@ -1,29 +1,38 @@
 'use client'
 
+import { useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useInteraction } from '@/app/context/InteractionContext'
+import { fadeInWorkRequest, homepageTransitionOut } from '@/app/animations'
+import { useWorkAccess } from '@/app/context/WorkAccessContext'
 import styles from './WorkRequest.module.scss'
 
 interface Props {
-  checkWork?: {
-    sentence1?: string,
-    sentence2?: string
-  }
+  checkWork?: string
 }
 
 
 export default function WorkRequest({ checkWork }: Props) {
-  const { hasInteracted, setInteracted } = useInteraction()
   const router = useRouter()
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const unlocked = useWorkAccess()
+
+  useEffect(() => {
+    fadeInWorkRequest(buttonRef.current)
+  }, [])
 
   function handleClick() {
-    setInteracted()
-    setTimeout(() => router.push('/work'), hasInteracted ? 0 : 600)
+    if (unlocked) {
+      homepageTransitionOut(() => {
+        router.push('/work')
+      })
+    } else {
+      router.push('/work')
+    }
   }
 
   return (
-    <button onClick={handleClick} className={styles.link}>
-      <p>{checkWork?.sentence1} <span>{checkWork?.sentence2}</span></p>
+    <button ref={buttonRef} onClick={handleClick} className={styles.link}>
+      <p>{checkWork}</p>
     </button>
   )
 }

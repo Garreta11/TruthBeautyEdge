@@ -9,6 +9,7 @@ export default function VideoBackground({ url }: Props) {
     <div className={styles.wrapper}>
       <video
         className={styles.video}
+        data-video-bg
         src={url}
         autoPlay
         loop

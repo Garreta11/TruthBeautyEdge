@@ -87,7 +87,10 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
       siteName,
       description,
       info,
-      checkWork,
+      checkWork {
+        label,
+        createdWith,
+      },
       reachOut {
         label,
         cities[] { city, phone },

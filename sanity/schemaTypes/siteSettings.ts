@@ -38,11 +38,7 @@ export const siteSettings = defineType({
     defineField({
       name: 'description',
       title: 'Description',
-      type: 'object',
-      fields: [
-        defineField({ name: 'desc1', title: 'First sentence', type: 'string' }),
-        defineField({ name: 'desc2', title: 'Second sentence', type: 'string' }),
-      ],
+      type: 'string',
     }),
 
     // ─── Info ──────────────────────────────────────────────────────────────────
@@ -63,7 +59,14 @@ export const siteSettings = defineType({
           of: [
             {
               type: 'block',
-              styles: [{ title: 'Normal', value: 'normal' }],
+              styles: [
+                { title: 'Normal', value: 'normal' },
+                { title: 'H1', value: 'h1' },
+                { title: 'H2', value: 'h2' },
+                { title: 'H3', value: 'h3' },
+                { title: 'H4', value: 'h4' },
+                { title: 'Quote', value: 'blockquote' },
+              ],
               marks: {
                 decorators: [
                   { title: 'Bold', value: 'strong' },
@@ -128,12 +131,20 @@ export const siteSettings = defineType({
     // ─── Check Work ────────────────────────────────────────────────────────────
     defineField({
       name: 'checkWork',
-      title: 'Check Work',
+      title: 'View work',
       type: 'object',
       fields: [
-        defineField({ name: 'sentence1', title: 'First sentence', type: 'string' }),
-        defineField({ name: 'sentence2', title: 'Second sentence', type: 'string' }),
-      ],
+        defineField({
+          name: 'label',
+          title: 'Label',
+          type: 'string',
+        }),
+        defineField({
+          name: 'createdWith',
+          title: 'Created with...',
+          type: 'string',
+        }),
+      ]
     })
   ],
   preview: {

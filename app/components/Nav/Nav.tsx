@@ -1,67 +1,96 @@
 'use client'
 
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import styles from './Nav.module.scss'
 import ReachOut from '@/app/components/ReachOut/ReachOut'
 import WorkRequest from '@/app/components/WorkRequest/WorkRequest'
+import WorkGate from '@/app/components/WorkGate/WorkGate'
 import Info from '@/app/components/Info/Info'
 import { usePanel } from '@/app/context/PanelContext'
+import { useWorkAccess } from '@/app/context/WorkAccessContext'
+import Logo from '../Logo/Logo'
 
 interface Props {
+  logo?: string
   reachOut?: {
     label?: string
     cities?: { city: string; phone?: string }[]
     mail?: string
   }
   checkWork?: {
-    sentence1?: string
-    sentence2?: string
+    label?: string
+    createdWith?: string
   }
-  description?: {
-    desc1?: string
-    desc2?: string
-  }
+  description?: string
   info?: {
     label?: string
     body?: unknown[]
   }
 }
 
-export default function Nav({ reachOut, checkWork, description, info }: Props) {
+export default function Nav({ logo, reachOut, checkWork, description, info }: Props) {
   const pathname = usePathname()
   const { openPanel, setOpenPanel } = usePanel()
+  const workUnlocked = useWorkAccess()
+  // The logo only animates up on the homepage; elsewhere it's already in place
+  const [logoReady, setLogoReady] = useState(pathname !== '/')
 
   if (pathname.startsWith('/studio')) return null
 
   return (
     <nav className={`${styles.nav} grid`}>
-      {description?.desc1 && (
-        <p className={styles.desc1}>{description.desc1}</p>
-      )}
-      {description?.desc2 && (
-        <p className={styles.desc2}>{description.desc2}</p>
-      )}
-      {reachOut?.cities && reachOut.cities.length > 0 && (
-        <p className={styles.cities}>
-          {reachOut.cities.map((c) => c.city).join('\t\t')}
-        </p>
-      )}
-      <WorkRequest checkWork={checkWork} />
-      <Info
-        label={info?.label}
-        body={info?.body}
-        open={openPanel === 'info'}
-        onOpen={() => setOpenPanel('info')}
-        onClose={() => setOpenPanel(null)}
-      />
-      <ReachOut
-        label={reachOut?.label}
-        cities={reachOut?.cities}
-        mail={reachOut?.mail}
-        open={openPanel === 'reachOut'}
-        onOpen={() => setOpenPanel('reachOut')}
-        onClose={() => setOpenPanel(null)}
-      />
+      
+      <Logo url={logo || "/logo.svg"} alt="Truth Beauty Edge" onTopComplete={() => setLogoReady(true)} />
+
+      <div className={styles.nav__description}>
+        {description && <p>{description}</p>}
+      </div>
+
+      <div className={styles.nav__view_work}>
+        {pathname === '/work' && workUnlocked ? (
+          <p>{checkWork?.createdWith}</p>
+        ) : (
+          <>
+            {logoReady && <WorkRequest checkWork={checkWork?.label} />}
+            {pathname === '/work' && <WorkGate mail={reachOut?.mail} />}
+          </>
+        )}
+      </div>
+
+      <div className={styles.nav__info}>
+        {info && (
+          <Info
+            label={info.label}
+            body={info.body}
+            open={openPanel === 'info'}
+            onOpen={() => setOpenPanel('info')}
+            onClose={() => setOpenPanel(null)}
+          />
+        )}
+      </div>
+
+      <div className={styles.nav__cities}>
+        <p>{reachOut?.cities?.[1]?.city}</p>
+        <p>{reachOut?.cities?.[0]?.city}</p>
+      </div>
+
+      <div className={styles.nav__reach_out}>
+        {reachOut && (
+          <ReachOut
+            label={reachOut.label}
+            cities={reachOut.cities}
+            mail={reachOut.mail}
+            open={openPanel === 'reachOut'}
+            onOpen={() => setOpenPanel('reachOut')}
+            onClose={() => setOpenPanel(null)}
+          />
+        )}
+      </div>
+
+
+
+
     </nav>
   )
 }

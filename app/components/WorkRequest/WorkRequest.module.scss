@@ -11,16 +11,21 @@
 
   p {
     white-space: nowrap;
-    color: rgba(255, 255, 255, 0.24);
+    opacity: 1;
+    transition: var(--transition);
   }
 
   span {
     color: white;
-    opacity: 0;
-    transition: opacity 0.2s ease;
+    opacity: 1;
+    transition: var(--transition);
+  }
+
+  &:hover p {
+    opacity: 0.24;
   }
 
   &:hover span {
-    opacity: 1;
+    opacity: 0.24;
   }
 }
