@@ -65,9 +65,13 @@
 }
 
 .fullscreen {
+  width: 18px;
+  height: 10px;
+  border-radius: 2px;
   background: none;
   border: none;
-  color: white;
+  background: white;
+  opacity: 0.3;
   cursor: pointer;
   padding: 0;
   font-size: 1rem;

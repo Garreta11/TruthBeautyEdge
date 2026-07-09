@@ -76,7 +76,9 @@ export default function VideoPlayer({ src }: Props) {
       </p>
 
       <div className={styles.controls}>
-        <span className={styles.time}>{formatTime(currentTime)}</span>
+        <div>
+        <span className={styles.time}>{formatTime(currentTime)} / {formatTime(duration)}</span>
+        </div>
         <input
           type="range"
           className={styles.track}
@@ -86,9 +88,9 @@ export default function VideoPlayer({ src }: Props) {
           value={currentTime}
           onChange={handleSeek}
         />
-        <span className={styles.time}>{formatTime(duration)}</span>
+        
         <button className={styles.fullscreen} onClick={handleFullscreen} aria-label="Fullscreen">
-          ⛶
+          
         </button>
       </div>
     </div>
