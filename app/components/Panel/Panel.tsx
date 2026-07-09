@@ -54,8 +54,8 @@ export default function Panel({ label, open: openProp, onOpen, onClose, children
           {children}
           <button className={styles.close} onClick={handleClose} aria-label="Close">
             <svg width="30" height="29" viewBox="0 0 30 29" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <line x1="0.309781" y1="28.3094" x2="28.3098" y2="0.309354" stroke="white" stroke-width="0.875"/>
-              <line x1="0.9285" y1="0.309354" x2="28.9285" y2="28.3094" stroke="white" stroke-width="0.875"/>
+              <line x1="0.309781" y1="28.3094" x2="28.3098" y2="0.309354" stroke="white" strokeWidth="0.875"/>
+              <line x1="0.9285" y1="0.309354" x2="28.9285" y2="28.3094" stroke="white" strokeWidth="0.875"/>
             </svg>
           </button>
         </div>
