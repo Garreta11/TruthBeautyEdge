@@ -61,6 +61,11 @@
   transition-delay: 0.25s;
 }
 
+.panel.open .content.closing {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
 .close {
   position: absolute;
   bottom: 1rem;
