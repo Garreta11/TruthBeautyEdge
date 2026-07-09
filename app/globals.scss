@@ -1,6 +1,6 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #FFFFFF;
 
   // ─── Animation ─────────────────────────────────────────────────────────────
   --transition: all 1s ease;
@@ -10,13 +10,6 @@
   --cols: 12;
   --gutter: 10px;
   --margin: 10px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 @media (max-width: 768px) {
