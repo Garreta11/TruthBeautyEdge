@@ -5,7 +5,7 @@ import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { OldProject, MediaItem } from '@/sanity/lib/types'
 import { urlFor } from '@/sanity/lib/image'
 import { usePanel } from '@/app/context/PanelContext'
-import VideoPlayer from '@/app/components/VideoPlayer/VideoPlayer'
+import VideoPlayer, { pauseVideoOutside } from '@/app/components/VideoPlayer/VideoPlayer'
 import styles from './WorkRow.module.scss'
 
 
@@ -96,7 +96,11 @@ export default function WorkRow({ project }: Props) {
   }
 
   return (
-    <div data-work-row className={`${styles.row} ${openPanel ? styles.locked : ''}`}>
+    <div
+      data-work-row
+      className={`${styles.row} ${openPanel ? styles.locked : ''}`}
+      onMouseEnter={(e) => pauseVideoOutside(e.currentTarget)}
+    >
       <div className={styles.strip} ref={stripRef} onScroll={handleScroll} data-lenis-prevent>
         {[0, 1, 2].map((copy) =>
           project.media?.map((item) => (

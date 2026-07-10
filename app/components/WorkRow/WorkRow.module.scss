@@ -19,6 +19,17 @@ $gap: 10px;
   &.locked:hover {
     filter: brightness(0.3);
   }
+
+  // `filter` establishes a new containing block, which would make a
+  // `position: fixed` expanded video position itself relative to this
+  // (scrolled) row instead of the viewport. Drop it while expanded —
+  // instantly (no transition), since Flip reads the layout synchronously
+  // right after this class is applied and a mid-transition filter value
+  // (anything other than the literal `none`) still counts as "set".
+  &:has([data-expanded='true']) {
+    filter: none !important;
+    transition: none !important;
+  }
 }
 
 .strip {
@@ -66,11 +77,13 @@ $gap: 10px;
   aspect-ratio: 16 / 9;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 0.5em;
 }
 
 .cellContainer {
-  /* max-width: 271px; */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   width: 70%;
 }
