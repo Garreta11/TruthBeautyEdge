@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { fadeInWorkRequest, homepageTransitionOut } from '@/app/animations'
+import { homepageTransitionOut } from '@/app/animations'
 import { useWorkAccess } from '@/app/context/WorkAccessContext'
 import styles from './WorkRequest.module.scss'
 
@@ -14,11 +14,7 @@ interface Props {
 export default function WorkRequest({ checkWork }: Props) {
   const router = useRouter()
   const buttonRef = useRef<HTMLButtonElement>(null)
-  const unlocked = useWorkAccess()
-
-  useEffect(() => {
-    fadeInWorkRequest(buttonRef.current)
-  }, [])
+  const { unlocked } = useWorkAccess()
 
   function handleClick() {
     if (unlocked) {

@@ -8,6 +8,8 @@
   grid-template-rows: repeat(3, 1fr);
   pointer-events: none;
 
+  opacity: 0;
+
   // Only interactive children receive pointer events
   > * {
     pointer-events: all;

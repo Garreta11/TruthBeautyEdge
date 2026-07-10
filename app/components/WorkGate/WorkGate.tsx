@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
 import gsap from 'gsap'
 import { validateWorkPassword } from '@/app/work/actions'
+import { useWorkAccess } from '@/app/context/WorkAccessContext'
 import styles from './WorkGate.module.scss'
 import { homepageTransitionOut } from '@/app/animations'
 
@@ -15,7 +15,7 @@ export default function WorkGate({ mail }: Props) {
   const gateRef = useRef<HTMLDivElement>(null)
   const [code, setCode] = useState('')
   const [error, setError] = useState(false)
-  const router = useRouter()
+  const { setUnlocked } = useWorkAccess()
 
   useEffect(() => {
     gsap.fromTo(gateRef.current, { opacity: 0 }, { opacity: 1, duration: 1, ease: 'power4.out' })
@@ -32,7 +32,7 @@ export default function WorkGate({ mail }: Props) {
     const valid = await validateWorkPassword(code)
     if (valid) {
       homepageTransitionOut(() => {
-        router.refresh()
+        setUnlocked(true)
       })
     } else {
       setError(true)

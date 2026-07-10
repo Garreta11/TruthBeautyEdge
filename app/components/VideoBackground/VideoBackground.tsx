@@ -14,7 +14,7 @@ export default function VideoBackground({ url }: Props) {
   const [muted, setMuted] = useState(true)
   const videoRef = useRef<HTMLVideoElement>(null)
   const pathname = usePathname()
-  const unlocked = useWorkAccess()
+  const { unlocked } = useWorkAccess()
   const { openPanel, setOpenPanel } = usePanel()
   const isWorkUnlocked = pathname === '/work' && unlocked
   const isHome = pathname === '/'

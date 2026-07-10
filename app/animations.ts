@@ -2,18 +2,18 @@ import gsap from 'gsap'
 
 export function homepageTransition(isTop: boolean, logoEl: Element | null, onLogoTop?: () => void) {
   const tl = gsap.timeline()
+  tl.fromTo(
+    logoEl,
+    { opacity: 0 },
+    { opacity: 1, duration: 1, ease: 'power1.out' },
+  )
 
   tl.fromTo(
     '[data-video-bg]',
     { filter: 'blur(44px) brightness(0)' },
     { filter: 'blur(44px) brightness(1)', duration: 1, ease: 'power1.out' }
   )
-  tl.fromTo(
-    logoEl,
-    { opacity: 0 },
-    { opacity: 1, duration: 1, ease: 'power1.out' },
-    '<'
-  )
+  
   tl.to(
     logoEl,
     {
@@ -25,6 +25,13 @@ export function homepageTransition(isTop: boolean, logoEl: Element | null, onLog
       onComplete: () => onLogoTop?.(),
     },
     '+=0.3'
+  )
+
+  tl.fromTo(
+    '[data-nav-els]',
+    { opacity: '0' },
+    { opacity: '1', duration: 2, ease: 'power1.out' },
+    '-=1'
   )
 }
 
@@ -43,10 +50,6 @@ export function homepageTransitionOut(onComplete?: () => void) {
     }
   )
 
-}
-
-export function fadeInWorkRequest(el: Element | null) {
-  gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 1, ease: 'power1.out' })
 }
 
 export function playWorkTransition() {

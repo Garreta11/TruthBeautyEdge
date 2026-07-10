@@ -32,65 +32,62 @@ interface Props {
 export default function Nav({ logo, reachOut, checkWork, description, info }: Props) {
   const pathname = usePathname()
   const { openPanel, setOpenPanel } = usePanel()
-  const workUnlocked = useWorkAccess()
+  const { unlocked: workUnlocked } = useWorkAccess()
   // The logo only animates up on the homepage; elsewhere it's already in place
   const [logoReady, setLogoReady] = useState(pathname !== '/')
 
   if (pathname.startsWith('/studio')) return null
 
   return (
-    <nav className={`${styles.nav} grid`}>
-      
+    <>
       <Logo url={logo || "/logo.svg"} alt="Truth Beauty Edge" onTopComplete={() => setLogoReady(true)} />
+      <nav className={`${styles.nav} grid`} data-nav-els>
+        
+        <div className={styles.nav__description}>
+          {description && <p>{description}</p>}
+        </div>
 
-      <div className={styles.nav__description}>
-        {description && <p>{description}</p>}
-      </div>
+        <div className={styles.nav__view_work} >
+          {pathname === '/work' && workUnlocked ? (
+            <p>{checkWork?.createdWith}</p>
+          ) : (
+            <>
+              {logoReady && <WorkRequest checkWork={checkWork?.label} />}
+              {pathname === '/work' && <WorkGate mail={reachOut?.mail} />}
+            </>
+          )}
+        </div>
 
-      <div className={styles.nav__view_work}>
-        {pathname === '/work' && workUnlocked ? (
-          <p>{checkWork?.createdWith}</p>
-        ) : (
-          <>
-            {logoReady && <WorkRequest checkWork={checkWork?.label} />}
-            {pathname === '/work' && <WorkGate mail={reachOut?.mail} />}
-          </>
-        )}
-      </div>
+        <div className={styles.nav__info}>
+          {info && (
+            <Info
+              label={info.label}
+              body={info.body}
+              open={openPanel === 'info'}
+              onOpen={() => setOpenPanel('info')}
+              onClose={() => setOpenPanel(null)}
+            />
+          )}
+        </div>
 
-      <div className={styles.nav__info}>
-        {info && (
-          <Info
-            label={info.label}
-            body={info.body}
-            open={openPanel === 'info'}
-            onOpen={() => setOpenPanel('info')}
-            onClose={() => setOpenPanel(null)}
-          />
-        )}
-      </div>
+        <div className={styles.nav__cities}>
+          <p>{reachOut?.cities?.[1]?.city}</p>
+          <p>{reachOut?.cities?.[0]?.city}</p>
+        </div>
 
-      <div className={styles.nav__cities}>
-        <p>{reachOut?.cities?.[1]?.city}</p>
-        <p>{reachOut?.cities?.[0]?.city}</p>
-      </div>
-
-      <div className={styles.nav__reach_out}>
-        {reachOut && (
-          <ReachOut
-            label={reachOut.label}
-            cities={reachOut.cities}
-            mail={reachOut.mail}
-            open={openPanel === 'reachOut'}
-            onOpen={() => setOpenPanel('reachOut')}
-            onClose={() => setOpenPanel(null)}
-          />
-        )}
-      </div>
-
-
-
-
-    </nav>
+        <div className={styles.nav__reach_out}>
+          {reachOut && (
+            <ReachOut
+              label={reachOut.label}
+              cities={reachOut.cities}
+              mail={reachOut.mail}
+              open={openPanel === 'reachOut'}
+              onOpen={() => setOpenPanel('reachOut')}
+              onClose={() => setOpenPanel(null)}
+            />
+          )}
+        </div>
+      </nav>
+    </>
   )
 }

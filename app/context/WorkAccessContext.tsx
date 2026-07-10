@@ -1,18 +1,21 @@
 'use client'
 
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useState } from 'react'
 
-const WorkAccessContext = createContext<boolean>(false)
-
-export function WorkAccessProvider({
-  unlocked,
-  children,
-}: {
+interface WorkAccessContextValue {
   unlocked: boolean
-  children: React.ReactNode
-}) {
+  setUnlocked: (value: boolean) => void
+}
+
+const WorkAccessContext = createContext<WorkAccessContextValue>({
+  unlocked: false,
+  setUnlocked: () => {},
+})
+
+export function WorkAccessProvider({ children }: { children: React.ReactNode }) {
+  const [unlocked, setUnlocked] = useState(false)
   return (
-    <WorkAccessContext.Provider value={unlocked}>
+    <WorkAccessContext.Provider value={{ unlocked, setUnlocked }}>
       {children}
     </WorkAccessContext.Provider>
   )

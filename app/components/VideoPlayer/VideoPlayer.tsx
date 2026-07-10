@@ -12,10 +12,16 @@ let currentlyPlaying: HTMLVideoElement | null = null
 
 // Pauses the currently-playing video if it isn't inside the given container —
 // used to stop playback when the user's attention moves to another project row.
+// Skipped while that video is expanded, since it should keep playing regardless
+// of which row the pointer is over.
 export function pauseVideoOutside(container: Element | null) {
-  if (currentlyPlaying && (!container || !container.contains(currentlyPlaying))) {
-    currentlyPlaying.pause()
-  }
+  if (!currentlyPlaying) return
+  if (container && container.contains(currentlyPlaying)) return
+
+  const player = currentlyPlaying.closest('[data-expanded]')
+  if (player?.getAttribute('data-expanded') === 'true') return
+
+  currentlyPlaying.pause()
 }
 
 interface Props {
@@ -141,16 +147,18 @@ export default function VideoPlayer({ src }: Props) {
   }
 
   return (
-    <div
-      className={`${styles.player} ${expanded ? styles.expanded : ''}`}
-      data-expanded={expanded}
-      ref={containerRef}
-      onClick={togglePlay}
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
-      onMouseMove={handleMouseMove}
-    >
-      <video ref={videoRef} src={src} autoPlay={false} loop muted={muted} playsInline />
+    <>
+      {expanded && <div className={styles.overlay} onClick={toggleExpand} />}
+      <div
+        className={`${styles.player} ${expanded ? styles.expanded : ''}`}
+        data-expanded={expanded}
+        ref={containerRef}
+        onClick={togglePlay}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
+        onMouseMove={handleMouseMove}
+      >
+        <video ref={videoRef} src={src} autoPlay={false} loop muted={muted} playsInline />
 
       <div ref={cursorRef} className={`${styles.playCursor} ${hovering && !overControls ? styles.visible : ''}`}>
         {isPlaying ? (
@@ -182,7 +190,7 @@ export default function VideoPlayer({ src }: Props) {
         onMouseLeave={() => setOverControls(false)}
       >
         <div>
-        <span className={styles.time}>{formatTime(currentTime)} / {formatTime(duration)}</span>
+        <p className={styles.time}>{formatTime(currentTime)} / {formatTime(duration)}</p>
         </div>
         <input
           type="range"
@@ -198,6 +206,7 @@ export default function VideoPlayer({ src }: Props) {
 
         </button>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

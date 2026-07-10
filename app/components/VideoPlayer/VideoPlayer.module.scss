@@ -1,3 +1,10 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: rgba(0, 0, 0, 0.7);
+}
+
 .player {
   position: relative;
   height: 100%;
@@ -19,6 +26,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    // A width-driven 16:9 box would compute a height taller than the
+    // viewport on screens wider than 16:9, overflowing vertically — fill
+    // both dimensions instead so it takes on the screen's own ratio.
+    @media (min-aspect-ratio: 16/9) {
+      width: calc(100% - 20px);
+      height: calc(100dvh - 20px);
+      aspect-ratio: auto;
+    }
 
     video {
       width: 100%;

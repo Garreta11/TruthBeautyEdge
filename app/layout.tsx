@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.scss'
 import { getSiteSettings } from '@/sanity/lib/queries'
-import { hasWorkAccess } from './work/actions'
 import { InteractionProvider } from './context/InteractionContext'
 import { PanelProvider } from './context/PanelContext'
 import { WorkAccessProvider } from './context/WorkAccessContext'
@@ -31,12 +30,11 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const settings = await getSiteSettings()
-  const workUnlocked = await hasWorkAccess()
 
   return (
     <html lang="en" className={`${neueHaas.variable} ${bizUDMincho.variable}`}>
       <body suppressHydrationWarning>
-        <WorkAccessProvider unlocked={workUnlocked}>
+        <WorkAccessProvider>
           <LenisProvider>
             <InteractionProvider>
               <PanelProvider>
