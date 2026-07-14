@@ -15,9 +15,9 @@ export default function WorkContent({ projects }: Props) {
   const { unlocked } = useWorkAccess()
   useEffect(() => {
     if (!unlocked) {
-      const logoEl = document.querySelector('[data-logo]')
-      const navEls = document.querySelector('[data-nav-els]')
-      const videoEl = document.querySelector('[data-video-bg]')
+      const logoEl = document.querySelector<HTMLElement>('[data-logo]')
+      const navEls = document.querySelector<HTMLElement>('[data-nav-els]')
+      const videoEl = document.querySelector<HTMLElement>('[data-video-bg]')
       if (logoEl) logoEl.style.opacity = '1'
       if (navEls) navEls.style.opacity = '1'
       if (videoEl) videoEl.style.filter = 'blur(44px) brightness(1)'
