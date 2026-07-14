@@ -12,12 +12,27 @@ $gap: 10px;
 
   opacity: 0;
 
-  &:hover {
-    filter: brightness(1);
+  // Hover only applies on devices that actually support it — on touch,
+  // marking a row [data-centered] (set from WorkScroll's scroll listener)
+  // stands in for hover instead.
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      filter: brightness(1);
+    }
+
+    &.locked:hover {
+      filter: brightness(0.3);
+    }
   }
 
-  &.locked:hover {
-    filter: brightness(0.3);
+  @media (max-width: 768px) {
+    &[data-centered='true'] {
+      filter: brightness(1);
+    }
+
+    &.locked[data-centered='true'] {
+      filter: brightness(0.3);
+    }
   }
 
   // `filter` establishes a new containing block, which would make a

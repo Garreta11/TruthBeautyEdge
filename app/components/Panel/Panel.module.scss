@@ -8,6 +8,8 @@
   cursor: pointer;
   color: white;
   transition: var(--transition);
+  text-align: right;
+  white-space: nowrap;
 
   &:hover {
     opacity: 0.24;
@@ -39,14 +41,10 @@
   }
 
   @media (max-width: 768px) {
-    position: fixed;
-    left: var(--margin);
-    right: var(--margin);
-    bottom: var(--margin);
-    width: auto;
-    min-width: 0;
-    max-height: 70dvh;
-    overflow-y: auto;
+    width: calc(100dvw - 20px);
+    min-width: auto;
+    right: 0;
+    bottom: calc(100% + 10px);
   }
 }
 

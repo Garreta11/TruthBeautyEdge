@@ -21,6 +21,25 @@ export default function WorkGate({ mail }: Props) {
     gsap.fromTo(gateRef.current, { opacity: 0 }, { opacity: 1, duration: 1, ease: 'power4.out' })
   }, [])
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const validate = async () => {
+      const valid = await validateWorkPassword(code);
+      if (!valid || cancelled) return;
+
+      homepageTransitionOut(() => {
+        setUnlocked(true);
+      });
+    };
+
+    validate();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [code]);
+
   const mailtoHref = mail
     ? `mailto:${mail}?subject=${encodeURIComponent('Access code request')}&body=${encodeURIComponent(
         "Hi,\n\nI'd like to request an access code to view past work.\n\nThanks!"

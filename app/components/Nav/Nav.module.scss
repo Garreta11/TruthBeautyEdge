@@ -17,7 +17,7 @@
 
   @media (max-width: 768px) {
     // Text is sized down on mobile; cascades to WorkRequest/Info/ReachOut too
-    font-size: 0.7rem;
+    font-size: 1rem;
     row-gap: 10px;
   }
 }
@@ -47,6 +47,12 @@
   gap: 30px;
   white-space: nowrap;
   color: white;
+
+  @media (max-width: 768px) {
+    position: relative;
+    flex-direction: column;
+    gap: 0px;
+  }
 }
 
 .nav__info {

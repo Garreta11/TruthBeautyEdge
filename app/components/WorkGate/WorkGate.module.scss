@@ -3,6 +3,12 @@
   align-items: center;
   gap: 14px;
   opacity: 0;
+
+  @media (max-width: 768px) {
+    position: absolute;
+    left: 0;
+    top: 100%;
+  }
 }
 
 .request {
@@ -29,9 +35,11 @@
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.24);
   outline: none;
-  color: white;
+  color: rgba(255, 255, 255, 0.24);
   width: 134px;
   padding: 0;
+  caret-color: rgba(255, 255, 255, 0.24);
+  letter-spacing: 4px;
 
   &.error {
     border-bottom-color: #ff6b6b;

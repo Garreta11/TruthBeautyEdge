@@ -71,8 +71,11 @@ input,
 textarea,
 select {
   font-family: inherit;
-  font-size: inherit;
+  font-size: 20px;
   letter-spacing: inherit;
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 }
 
 // ─── Grid utility ────────────────────────────────────────────────────────────
@@ -83,10 +86,4 @@ select {
   column-gap: var(--gutter);
   padding: var(--margin);
   width: 100%;
-}
-
-.hover {
-  &:hover {
-    
-  }
 }
