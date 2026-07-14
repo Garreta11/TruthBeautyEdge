@@ -4,7 +4,7 @@
   z-index: 10;
   width: 100dvw;
   height: 100dvh;
-  // .grid provides 12 columns + padding-inline + column-gap
+  // .grid provides 12 columns (3 on mobile) + padding-inline + column-gap
   grid-template-rows: repeat(3, 1fr);
   pointer-events: none;
 
@@ -16,7 +16,7 @@
   }
 
   @media (max-width: 768px) {
-    // Text is sized down on mobile; cascades to WorkRequest/Info/ReachOut too
+    grid-template-rows: repeat(2, 1fr);
     font-size: 1rem;
     row-gap: 10px;
   }
@@ -32,6 +32,10 @@
   color: white;
 
   @media (max-width: 768px) {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: center;
+    justify-self: end;
     white-space: normal;
     max-width: 48vw;
   }
@@ -49,6 +53,10 @@
   color: white;
 
   @media (max-width: 768px) {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+    justify-self: start;
     position: relative;
     flex-direction: column;
     gap: 0px;
@@ -61,6 +69,14 @@
   align-self: end;
   justify-self: end;
   color: white;
+
+  @media (max-width: 768px) {
+    grid-column: 3;
+    grid-row: 2;
+    align-self: start;
+    justify-self: end;
+    text-align: right;
+  }
 }
 
 .nav__cities {
@@ -74,8 +90,43 @@
   color: white;
 
   @media (max-width: 768px) {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+    justify-self: start;
     white-space: normal;
     max-width: 48vw;
+  }
+}
+
+.nav__allrights {
+  grid-column: 5;
+  grid-row: 3;
+  align-self: end;
+  justify-self: end;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: center;
+    justify-self: start;
+  }
+}
+
+.nav__links {
+  grid-column: 10;
+  grid-row: 3;
+  align-self: end;
+  justify-self: end;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    grid-column: 3;
+    grid-row: 2;
+    align-self: center;
+    justify-self: end;
+    text-align: right;
   }
 }
 
@@ -85,4 +136,12 @@
   align-self: end;
   justify-self: end;
   color: white;
+
+  @media (max-width: 768px) {
+    grid-column: 3;
+    grid-row: 2;
+    align-self: end;
+    justify-self: end;
+    text-align: right;
+  }
 }

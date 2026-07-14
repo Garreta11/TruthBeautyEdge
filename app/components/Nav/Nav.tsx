@@ -10,6 +10,7 @@ import Info from '@/app/components/Info/Info'
 import { usePanel } from '@/app/context/PanelContext'
 import { useWorkAccess } from '@/app/context/WorkAccessContext'
 import Logo from '../Logo/Logo'
+import Link from 'next/link'
 
 interface Props {
   logo?: string
@@ -73,6 +74,14 @@ export default function Nav({ logo, reachOut, checkWork, description, info }: Pr
         <div className={styles.nav__cities}>
           <p>{reachOut?.cities?.[1]?.city}</p>
           <p>{reachOut?.cities?.[0]?.city}</p>
+        </div>
+
+        <div className={styles.nav__allrights}>
+          <p>©2026 All rights reserved</p>
+        </div>
+
+        <div className={styles.nav__links}>
+          <Link href="https://www.instagram.com/truthbeautyedge/" target='_blank'>Instagram</Link>
         </div>
 
         <div className={styles.nav__reach_out}>
