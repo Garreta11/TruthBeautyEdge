@@ -36,7 +36,7 @@ export default function Logo({ url, alt, onTopComplete }: Props) {
         return
       case '/work':
         workpageTransitionOut(() => {
-          homepageTransition(isTop, containerRef.current)
+          homepageTransition(containerRef.current)
           router.push('/')
         })
         return
@@ -50,7 +50,7 @@ export default function Logo({ url, alt, onTopComplete }: Props) {
 
   useEffect(() => {
     if (!isTop || !isHome) return
-    homepageTransition(isTop, containerRef.current, () => onTopComplete?.())
+    homepageTransition(containerRef.current, () => onTopComplete?.())
 
   }, [isTop, isHome])
 

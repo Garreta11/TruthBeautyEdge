@@ -3,7 +3,7 @@
 import { useRef, useEffect } from 'react'
 import type { OldProject } from '@/sanity/lib/types'
 import WorkRow from '@/app/components/WorkRow/WorkRow'
-import { playWorkTransition } from '../../animations'
+import { workpageTransition } from '../../animations'
 import styles from './WorkScroll.module.scss'
 
 interface Props {
@@ -18,7 +18,7 @@ export default function WorkScroll({ projects }: Props) {
     if (!el) return
     // el.scrollTop = el.scrollHeight / 3
     
-    playWorkTransition()
+    workpageTransition()
     
   }, [projects.length])
 

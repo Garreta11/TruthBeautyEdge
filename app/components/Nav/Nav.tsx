@@ -52,7 +52,7 @@ export default function Nav({ logo, reachOut, checkWork, description, info }: Pr
             <p>{checkWork?.createdWith}</p>
           ) : (
             <>
-              {logoReady && <WorkRequest checkWork={checkWork?.label} />}
+              <WorkRequest checkWork={checkWork?.label} />
               {pathname === '/work' && <WorkGate mail={reachOut?.mail} />}
             </>
           )}

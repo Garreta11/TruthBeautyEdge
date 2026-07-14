@@ -47,6 +47,7 @@ export default function VideoBackground({ url }: Props) {
           loop
           muted={muted}
           playsInline
+          preload="metadata"
         />
       </div>
       <div className={styles.clickCatcher} onClick={handleVideoClick} />

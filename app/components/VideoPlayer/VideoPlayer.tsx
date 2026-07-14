@@ -158,7 +158,7 @@ export default function VideoPlayer({ src }: Props) {
         onMouseLeave={() => setHovering(false)}
         onMouseMove={handleMouseMove}
       >
-        <video ref={videoRef} src={src} autoPlay={false} loop muted={muted} playsInline />
+        <video ref={videoRef} src={src} autoPlay={false} loop muted={muted} playsInline preload="metadata" />
 
       <div ref={cursorRef} className={`${styles.playCursor} ${hovering && !overControls ? styles.visible : ''}`}>
         {isPlaying ? (

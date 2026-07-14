@@ -24,11 +24,14 @@ const components: PortableTextComponents = {
 
 function MediaCell({ item }: { item: MediaItem }) {
   if (item._type === 'mediaImage') {
-    const src = urlFor(item.image).url()
+    // Rows display at up to ~100dvh/2 tall — request roughly that size (at 2x
+    // for retina) instead of the original upload, and let Sanity serve
+    // WebP/AVIF where supported.
+    const src = urlFor(item.image).height(1200).auto('format').quality(75).url()
     return (
       <div className={styles.cell}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt={item.alt ?? ''} />
+        <img src={src} alt={item.alt ?? ''} loading="lazy" />
       </div>
     )
   }
