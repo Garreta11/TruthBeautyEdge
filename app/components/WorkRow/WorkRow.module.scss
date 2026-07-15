@@ -7,7 +7,7 @@ $gap: 10px;
   height: $row-height;
   padding-block: 5px;
 
-  filter: brightness(0.3);
+  filter: brightness(0.2);
   transition: var(--transition);
 
   opacity: 0;
@@ -21,7 +21,7 @@ $gap: 10px;
     }
 
     &.locked:hover {
-      filter: brightness(0.3);
+      filter: brightness(0.2);
     }
   }
 
@@ -31,7 +31,7 @@ $gap: 10px;
     }
 
     &.locked[data-centered='true'] {
-      filter: brightness(0.3);
+      filter: brightness(0.2);
     }
   }
 

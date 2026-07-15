@@ -94,7 +94,7 @@
   @media (max-width: 768px) {
     grid-column: 1;
     grid-row: 2;
-    align-self: end;
+    align-self: center;
     justify-self: start;
     white-space: normal;
     max-width: 48vw;
@@ -111,7 +111,7 @@
   @media (max-width: 768px) {
     grid-column: 1;
     grid-row: 2;
-    align-self: center;
+    align-self: end;
     justify-self: start;
   }
 }
@@ -126,7 +126,7 @@
   @media (max-width: 768px) {
     grid-column: 3;
     grid-row: 2;
-    align-self: center;
+    align-self: end;
     justify-self: end;
     text-align: right;
   }
@@ -142,7 +142,7 @@
   @media (max-width: 768px) {
     grid-column: 3;
     grid-row: 2;
-    align-self: end;
+    align-self: center;
     justify-self: end;
   }
 }
