@@ -53,13 +53,13 @@
   gap: 30px;
   white-space: nowrap;
   color: white;
+  position: relative;
 
   @media (max-width: 768px) {
     grid-column: 1;
     grid-row: 5;
     align-self: center;
     justify-self: start;
-    position: relative;
     flex-direction: column;
     gap: 0px;
   }

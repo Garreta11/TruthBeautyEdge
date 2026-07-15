@@ -4,6 +4,9 @@
   gap: 14px;
   opacity: 0;
 
+  position: absolute;
+  left: calc(100% + 14px);
+
   @media (max-width: 768px) {
     position: fixed;
     left: var(--margin);
