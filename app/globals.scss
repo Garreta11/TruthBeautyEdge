@@ -82,7 +82,10 @@ select {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(var(--cols), 1fr);
+  // minmax(0, 1fr), not plain 1fr: a bare 1fr track has an implicit
+  // min-width: auto, so it grows to fit its content (e.g. nowrap text)
+  // and pushes every other column along with it.
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--gutter);
   padding: var(--margin);
   width: 100%;

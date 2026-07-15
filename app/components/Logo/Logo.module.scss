@@ -6,6 +6,7 @@
   z-index: 1000;
   width: 65%;
   max-width: 80vw;
+  aspect-ratio: 4 / 1;
   opacity: 0;
   cursor: pointer;
 
@@ -23,12 +24,18 @@
 
 // This layer sits behind the SVG and applies backdrop-filter
 // only through the SVG shapes (letters) used as a mask.
+// It shares the exact same box (position: absolute; inset: 0) and
+// fill-sizing (100% 100%, no "contain") as .img below, so both
+// layers resolve to identical pixel geometry — any independent
+// sizing/rounding between the two would show up as a soft glow
+// offset from the crisp logo edges once blurred at this radius.
 .backdrop {
   position: absolute;
   inset: 0;
   backdrop-filter: blur(100px);
-  -webkit-mask-size: contain;
-  mask-size: contain;
+  -webkit-backdrop-filter: blur(100px);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-position: center;
@@ -37,8 +44,11 @@
 
 .img {
   display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
-  position: relative;
+  /* width: 100%;
+  height: 100%; */
+  object-fit: fill;
   opacity: 0.1;
 }

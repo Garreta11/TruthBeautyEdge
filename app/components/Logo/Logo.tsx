@@ -18,6 +18,7 @@ export default function Logo({ url, alt, onTopComplete }: Props) {
   const router = useRouter()
   const { hasInteracted } = useInteraction()
   const [loaded, setLoaded] = useState(false)
+  const [ratio, setRatio] = useState<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -58,6 +59,7 @@ export default function Logo({ url, alt, onTopComplete }: Props) {
     <div
       ref={containerRef}
       className={`${styles.container} ${isTop && !isHome ? styles.top : ''}`}
+      style={ratio ? { aspectRatio: ratio } : undefined}
       onClick={handleClick}
       data-logo
     >
@@ -68,7 +70,15 @@ export default function Logo({ url, alt, onTopComplete }: Props) {
           WebkitMaskImage: `url(${url})`,
         }}
       />
-      <img className={styles.img} src={url} alt={alt ?? 'Logo'} />
+      <img
+        className={styles.img}
+        src={url}
+        alt={alt ?? 'Logo'}
+        onLoad={(e) => {
+          const { naturalWidth, naturalHeight } = e.currentTarget
+          if (naturalWidth && naturalHeight) setRatio(naturalWidth / naturalHeight)
+        }}
+      />
     </div>
   )
 }
