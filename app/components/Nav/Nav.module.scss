@@ -16,9 +16,11 @@
   }
 
   @media (max-width: 768px) {
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 10px;
+    grid-template-rows: repeat(8, 1fr);
+    row-gap: 0px;
     font-size: 1rem;
-    row-gap: 10px;
   }
 }
 
@@ -33,12 +35,9 @@
 
   @media (max-width: 768px) {
     grid-column: 1 / -1;
-    grid-row: 1;
-    align-self: center;
+    grid-row: 2;
+    align-self: end;
     justify-self: end;
-    max-width: 100%;
-    min-width: 0;
-    overflow: hidden;
     text-align: right;
     white-space: nowrap;
   }
@@ -57,8 +56,8 @@
 
   @media (max-width: 768px) {
     grid-column: 1;
-    grid-row: 2;
-    align-self: start;
+    grid-row: 5;
+    align-self: center;
     justify-self: start;
     position: relative;
     flex-direction: column;
@@ -75,8 +74,8 @@
 
   @media (max-width: 768px) {
     grid-column: 3;
-    grid-row: 2;
-    align-self: start;
+    grid-row: 5;
+    align-self: center;
     justify-self: end;
   }
 }
@@ -93,8 +92,8 @@
 
   @media (max-width: 768px) {
     grid-column: 1;
-    grid-row: 2;
-    align-self: center;
+    grid-row: 6;
+    align-self: end;
     justify-self: start;
     white-space: normal;
     max-width: 48vw;
@@ -110,7 +109,7 @@
 
   @media (max-width: 768px) {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 8;
     align-self: end;
     justify-self: start;
   }
@@ -125,7 +124,7 @@
 
   @media (max-width: 768px) {
     grid-column: 3;
-    grid-row: 2;
+    grid-row: 6;
     align-self: end;
     justify-self: end;
     text-align: right;
@@ -141,8 +140,8 @@
 
   @media (max-width: 768px) {
     grid-column: 3;
-    grid-row: 2;
-    align-self: center;
+    grid-row: 8;
+    align-self: end;
     justify-self: end;
   }
 }

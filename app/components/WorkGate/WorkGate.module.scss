@@ -5,9 +5,9 @@
   opacity: 0;
 
   @media (max-width: 768px) {
-    position: absolute;
-    left: 0;
-    top: 100%;
+    position: fixed;
+    left: var(--margin);
+    top: calc(var(--margin) + 5 * (100dvh - 2 * var(--margin)) / 8);
   }
 }
 
