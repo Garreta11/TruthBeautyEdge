@@ -30,12 +30,17 @@
   color: white;
   cursor: pointer;
   letter-spacing: 0.05em;
-  opacity: 0.24;
+  opacity: 0;
   transition: opacity 0.2s ease;
-
-  &.active {
-    opacity: 1;
+  
+  @media (max-width: 768px) {
+    display: none;
   }
+  
+  &.active {
+    opacity: 1 !important;
+  }
+
 
   &.hidden {
     opacity: 0;

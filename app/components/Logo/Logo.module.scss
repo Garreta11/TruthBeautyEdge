@@ -6,10 +6,13 @@
   z-index: 1000;
   width: 65%;
   max-width: 80vw;
-
   opacity: 0;
-
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    max-width: 100vw;
+    width: calc(100% - 20px);
+  }
 
   &.top {
     top: 10px;

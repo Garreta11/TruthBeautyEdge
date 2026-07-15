@@ -33,6 +33,13 @@ export function homepageTransition(logoEl: Element | null, onLogoTop?: () => voi
     { opacity: '1', duration: 2, ease: 'power1.out' },
     '-=1'
   )
+  
+  tl.fromTo(
+    '[data-video-volume]',
+    { opacity: '0' },
+    { opacity: '0.24', duration: 2, ease: 'power1.out' },
+    '<'
+  )
 }
 
 export function homepageTransitionOut(onComplete?: () => void) {

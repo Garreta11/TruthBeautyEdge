@@ -43,9 +43,13 @@ export default function Panel({ label, open: openProp, onOpen, onClose, children
     }, CLOSE_FADE_MS)
   }
 
+  function handleTriggerClick() {
+    open ? handleClose() : handleOpen()
+  }
+
   return (
     <div className={styles.wrapper} data-panel-root>
-      <button className={styles.trigger} onClick={handleOpen}>
+      <button className={styles.trigger} onClick={handleTriggerClick}>
         <p>{label}</p>
       </button>
 

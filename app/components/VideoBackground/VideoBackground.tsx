@@ -18,6 +18,7 @@ export default function VideoBackground({ url }: Props) {
   const { openPanel, setOpenPanel } = usePanel()
   const isWorkUnlocked = pathname === '/work' && unlocked
   const isHome = pathname === '/'
+  const isWorkLocked = pathname === '/work' && !unlocked
 
   useEffect(() => {
     const video = videoRef.current
@@ -30,7 +31,7 @@ export default function VideoBackground({ url }: Props) {
   }, [isWorkUnlocked])
 
   function handleVideoClick() {
-    if (isHome && openPanel) {
+    if ((isHome || isWorkLocked) && openPanel) {
       setOpenPanel(null)
     }
   }
@@ -52,8 +53,9 @@ export default function VideoBackground({ url }: Props) {
       </div>
       <div className={styles.clickCatcher} onClick={handleVideoClick} />
       <p
-        className={`${styles.volume} ${!muted ? styles.active : ''} ${isWorkUnlocked ? styles.hidden : ''}`}
+        className={`${styles.volume} ${!muted ? styles.active : ""} ${isWorkUnlocked ? styles.hidden : ''}`}
         onClick={() => setMuted((m) => !m)}
+        data-video-volume
       >
         Volume
       </p>
