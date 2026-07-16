@@ -91,6 +91,10 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
         label,
         createdWith,
       },
+      mail {
+        subject,
+        body,
+      },
       reachOut {
         label,
         cities[] { city, phone },

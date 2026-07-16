@@ -65,6 +65,10 @@ export interface SiteSettings {
     label?: string
     createdWith?: string
   }
+  mail?: {
+    subject?: string
+    body?: PortableTextBlock
+  }
   logoUrl?: string
   favicon?: SanityImageSource
   backgroundVideoUrl?: string

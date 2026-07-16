@@ -28,9 +28,13 @@ interface Props {
     label?: string
     body?: unknown[]
   }
+  mail?: {
+    subject?: string
+    body?: unknown[]
+  }
 }
 
-export default function Nav({ logo, reachOut, checkWork, description, info }: Props) {
+export default function Nav({ logo, reachOut, checkWork, description, info, mail }: Props) {
   const pathname = usePathname()
   const { openPanel, setOpenPanel } = usePanel()
   const { unlocked: workUnlocked } = useWorkAccess()
@@ -54,7 +58,9 @@ export default function Nav({ logo, reachOut, checkWork, description, info }: Pr
           ) : (
             <>
               <WorkRequest checkWork={checkWork?.label} />
-              {pathname === '/work' && <WorkGate mail={reachOut?.mail} />}
+              {pathname === '/work' && (
+                <WorkGate mail={reachOut?.mail} subject={mail?.subject} body={mail?.body} />
+              )}
             </>
           )}
         </div>

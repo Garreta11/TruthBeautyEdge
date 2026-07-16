@@ -41,7 +41,7 @@ export default async function RootLayout({
                 {settings?.backgroundVideoUrl && (
                   <VideoBackground url={settings.backgroundVideoUrl} />
                 )}
-                <Nav logo={settings?.logoUrl} reachOut={settings?.reachOut} checkWork={settings?.checkWork} description={settings?.description} info={settings?.info} />
+                <Nav logo={settings?.logoUrl} reachOut={settings?.reachOut} checkWork={settings?.checkWork} description={settings?.description} info={settings?.info} mail={settings?.mail} />
                 <main>
                   {children}
                 </main>

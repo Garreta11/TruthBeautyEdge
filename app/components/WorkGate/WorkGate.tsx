@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import gsap from 'gsap'
+import { toPlainText } from '@portabletext/toolkit'
+import type { PortableTextBlock } from '@portabletext/types'
 import { validateWorkPassword } from '@/app/work/actions'
 import { useWorkAccess } from '@/app/context/WorkAccessContext'
 import styles from './WorkGate.module.scss'
@@ -9,9 +11,11 @@ import { homepageTransitionOut } from '@/app/animations'
 
 interface Props {
   mail?: string
+  subject?: string
+  body?: unknown[]
 }
 
-export default function WorkGate({ mail }: Props) {
+export default function WorkGate({ mail, subject, body }: Props) {
   const gateRef = useRef<HTMLDivElement>(null)
   const [code, setCode] = useState('')
   const [error, setError] = useState(false)
@@ -41,8 +45,12 @@ export default function WorkGate({ mail }: Props) {
   }, [code]);
 
   const mailtoHref = mail
-    ? `mailto:${mail}?subject=${encodeURIComponent('Access code request')}&body=${encodeURIComponent(
-        "Hi,\n\nI'd like to request an access code to view past work.\n\nThanks!"
+    ? `mailto:${mail}?subject=${encodeURIComponent(
+        subject || 'Access code request'
+      )}&body=${encodeURIComponent(
+        body?.length
+          ? toPlainText(body as PortableTextBlock[])
+          : "Hi,\n\nI'd like to request an access code to view past work.\n\nThanks!"
       )}`
     : undefined
 
