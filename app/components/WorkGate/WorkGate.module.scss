@@ -11,9 +11,9 @@
     // nav__view_work (the positioned ancestor) is itself grid-placed at
     // row 4 with align-self: center, so its own vertical center already
     // sits on row 4's midline — centering within it lands on the same point.
-    position: absolute;
-    left: 0;
-    top: calc(100% + 100dvh/6 - 70px);
+    position: fixed;
+    left: 10px;
+    top: calc(3 *  100dvh/6 + 100dvh/12);
   }
 }
 
