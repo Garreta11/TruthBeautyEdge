@@ -47,18 +47,46 @@
   grid-row: 2;
   align-self: end;
   justify-self: start;
-  display: flex;
-  align-items: center;
-  gap: 30px;
   white-space: nowrap;
   color: white;
   position: relative;
+
+  // Stacks both crossfading states in the same cell so the box sizes to
+  // whichever is larger, instead of the 0×0 box position: absolute would give.
+  display: grid;
+  grid-template-areas: 'stack';
+
+  > * {
+    grid-area: stack;
+  }
 
   @media (max-width: 768px) {
     grid-column: 1;
     grid-row: 4;
     align-self: start;
     justify-self: start;
+  }
+}
+
+.createdWith,
+.workRequestGroup {
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition);
+
+  &.visible {
+    transition-delay: 0.5s;
+    opacity: 1;
+    pointer-events: all;
+  }
+}
+
+.workRequestGroup {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+
+  @media (max-width: 768px) {
     flex-direction: column;
     gap: 0px;
   }

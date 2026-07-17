@@ -103,6 +103,7 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
       "logoUrl": logo.asset->url,
       favicon,
       "backgroundVideoUrl": backgroundVideo.asset->url,
+      "whoWeAreImageUrl": whoWeAreImage.asset->url,
     }`
   )
 }

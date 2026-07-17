@@ -12,8 +12,8 @@ interface Props {
   children?: ReactNode
 }
 
-// Let the content fade out before the panel itself shrinks away
-const CLOSE_FADE_MS = 150
+// Sequence: content fades out (0.1s), then the panel shrinks + fades out (0.35s, starting 0.1s in)
+const CLOSE_FADE_MS = 460
 
 export default function Panel({ label, open: openProp, onOpen, onClose, children }: Props) {
   const { setInteracted } = useInteraction()
@@ -53,7 +53,10 @@ export default function Panel({ label, open: openProp, onOpen, onClose, children
         <p>{label}</p>
       </button>
 
-      <div className={`${styles.panel} ${open ? styles.open : ''}`} data-open={open}>
+      <div
+        className={`${styles.panel} ${open ? styles.open : ''} ${closing ? styles.closing : ''}`}
+        data-open={open}
+      >
         <div className={`${styles.content} ${closing ? styles.closing : ''}`}>
           {children}
           <button className={styles.close} onClick={handleClose} aria-label="Close">

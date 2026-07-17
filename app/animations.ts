@@ -10,16 +10,21 @@ export function homepageTransition(logoEl: Element | null, onLogoTop?: () => voi
 
   tl.fromTo(
     '[data-video-bg]',
+    { opacity: 0 },
+    { opacity: 1, duration: 1, ease: 'power1.out' }
+  )
+  /* tl.fromTo(
+    '[data-video-bg]',
     { filter: 'blur(44px) brightness(0)' },
     { filter: 'blur(44px) brightness(1)', duration: 1, ease: 'power1.out' }
-  )
+  ) */
   
   tl.to(
     logoEl,
     {
       top: 10,
       left: 10,
-      yPercent: 0,
+      y: 0,
       duration: 2,
       ease: 'power2.inOut',
       onComplete: () => onLogoTop?.(),
@@ -29,8 +34,8 @@ export function homepageTransition(logoEl: Element | null, onLogoTop?: () => voi
 
   tl.fromTo(
     '[data-nav-els]',
-    { opacity: '0' },
-    { opacity: '1', duration: 2, ease: 'power1.out' },
+    { opacity: 0 },
+    { opacity: 1, duration: 2, ease: 'power1.out' },
     '-=1'
   )
   
@@ -48,10 +53,10 @@ export function homepageTransitionOut(onComplete?: () => void) {
   tl.fromTo(
     '[data-video-bg]',
     {
-      filter: 'blur(44px) brightness(1)'
+      opacity: 1
     },
     {
-      filter: 'blur(44px) brightness(0)',
+      opacity: 0,
       duration: 1,
       ease: 'power1.out',
     }
@@ -65,7 +70,7 @@ export function workpageTransition() {
   const video = document.querySelector<HTMLVideoElement>('[data-video-bg]')
   const logo = document.querySelector<HTMLDivElement>('[data-logo]')
 
-  tl.to(video, { filter: 'blur(44px) brightness(0)', duration: 1, ease: 'power1.out' })
+  tl.to(video, { opacity: 0, duration: 1, ease: 'power1.out' })
   tl.to(logo, { opacity: 1, duration: 1, ease: 'power2.inOut' }, '<')
   tl.fromTo(
     '[data-work-row]',

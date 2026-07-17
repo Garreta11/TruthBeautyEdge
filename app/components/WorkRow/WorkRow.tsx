@@ -20,6 +20,13 @@ const components: PortableTextComponents = {
       <blockquote>{children}</blockquote>
     ),
   },
+  marks: {
+    link: ({ children, value }) => (
+      <a href={value?.href} target="_blank" rel="noopener noreferrer">
+        {children}
+      </a>
+    ),
+  },
 }
 
 function MediaCell({ item }: { item: MediaItem }) {

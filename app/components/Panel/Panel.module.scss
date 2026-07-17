@@ -32,12 +32,22 @@
 
   transform-origin: bottom right;
   transform: scale(0);
+  opacity: 0;
   pointer-events: none;
-  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.1s ease;
 
   &.open {
+    opacity: 1;
     transform: scale(1);
     pointer-events: all;
+  }
+
+  // Waits for the content to start disappearing (see .content.closing delay below),
+  // then shrinks and fades the panel itself out
+  &.open.closing {
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity 0.35s ease 0.1s, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
   }
 
   @media (max-width: 768px) {
@@ -60,7 +70,7 @@
 
 .panel.open .content.closing {
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.1s ease;
 }
 
 .close {

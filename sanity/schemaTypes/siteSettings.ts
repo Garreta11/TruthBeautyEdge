@@ -33,6 +33,12 @@ export const siteSettings = defineType({
       type: 'file',
       options: { accept: 'video/*' },
     }),
+    defineField({
+      name: 'whoWeAreImage',
+      title: 'Who We Are Image',
+      type: 'image',
+      options: { hotspot: true },
+    }),
 
     // ─── Description ───────────────────────────────────────────────────────────
     defineField({

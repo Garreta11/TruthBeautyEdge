@@ -38,6 +38,7 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
   const pathname = usePathname()
   const { openPanel, setOpenPanel } = usePanel()
   const { unlocked: workUnlocked } = useWorkAccess()
+  const workAccessGranted = pathname === '/work' && workUnlocked
   // The logo only animates up on the homepage; elsewhere it's already in place
   const [logoReady, setLogoReady] = useState(pathname !== '/')
 
@@ -52,17 +53,16 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
           {description && <p>{description}</p>}
         </div>
 
-        <div className={styles.nav__view_work} >
-          {pathname === '/work' && workUnlocked ? (
-            <p>{checkWork?.createdWith}</p>
-          ) : (
-            <>
-              <WorkRequest checkWork={checkWork?.label} />
-              {pathname === '/work' && (
-                <WorkGate mail={reachOut?.mail} subject={mail?.subject} body={mail?.body} />
-              )}
-            </>
-          )}
+        <div className={styles.nav__view_work}>
+          <p className={`${styles.createdWith} ${workAccessGranted ? styles.visible : ''}`}>
+            {checkWork?.createdWith}
+          </p>
+          <div className={`${styles.workRequestGroup} ${workAccessGranted ? '' : styles.visible}`}>
+            <WorkRequest checkWork={checkWork?.label} />
+            {pathname === '/work' && (
+              <WorkGate mail={reachOut?.mail} subject={mail?.subject} body={mail?.body} />
+            )}
+          </div>
         </div>
 
         <div className={styles.nav__info}>

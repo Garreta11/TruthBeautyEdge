@@ -192,15 +192,22 @@ export default function VideoPlayer({ src }: Props) {
         <div>
         <p className={styles.time}>{formatTime(currentTime)} / {formatTime(duration)}</p>
         </div>
-        <input
-          type="range"
-          className={styles.track}
-          min={0}
-          max={duration || 0}
-          step={0.01}
-          value={currentTime}
-          onChange={handleSeek}
-        />
+        <div className={styles.trackWrapper}>
+          <div className={styles.trackBase} />
+          <div
+            className={styles.trackProgress}
+            style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+          />
+          <input
+            type="range"
+            className={styles.track}
+            min={0}
+            max={duration || 0}
+            step={0.01}
+            value={currentTime}
+            onChange={handleSeek}
+          />
+        </div>
 
         <button className={styles.fullscreen} onClick={toggleExpand} aria-label="Expand">
 

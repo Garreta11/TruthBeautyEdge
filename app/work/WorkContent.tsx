@@ -20,7 +20,7 @@ export default function WorkContent({ projects }: Props) {
       const videoEl = document.querySelector<HTMLElement>('[data-video-bg]')
       if (logoEl) logoEl.style.opacity = '1'
       if (navEls) navEls.style.opacity = '1'
-      if (videoEl) videoEl.style.filter = 'blur(44px) brightness(1)'
+      if (videoEl) videoEl.style.opacity = '1'
     }
   }, [unlocked])
 

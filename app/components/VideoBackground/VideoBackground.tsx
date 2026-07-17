@@ -8,9 +8,10 @@ import styles from './VideoBackground.module.scss'
 
 interface Props {
   url: string
+  infoImageUrl?: string
 }
 
-export default function VideoBackground({ url }: Props) {
+export default function VideoBackground({ url, infoImageUrl }: Props) {
   const [muted, setMuted] = useState(true)
   const videoRef = useRef<HTMLVideoElement>(null)
   const pathname = usePathname()
@@ -50,6 +51,14 @@ export default function VideoBackground({ url }: Props) {
           playsInline
           preload="metadata"
         />
+        {infoImageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            className={`${styles.infoImage} ${openPanel === 'info' ? styles.visible : ''}`}
+            src={infoImageUrl}
+            alt=""
+          />
+        )}
       </div>
       <div className={styles.clickCatcher} onClick={handleVideoClick} />
       <p

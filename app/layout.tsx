@@ -39,7 +39,7 @@ export default async function RootLayout({
             <InteractionProvider>
               <PanelProvider>
                 {settings?.backgroundVideoUrl && (
-                  <VideoBackground url={settings.backgroundVideoUrl} />
+                  <VideoBackground url={settings.backgroundVideoUrl} infoImageUrl={settings?.whoWeAreImageUrl} />
                 )}
                 <Nav logo={settings?.logoUrl} reachOut={settings?.reachOut} checkWork={settings?.checkWork} description={settings?.description} info={settings?.info} mail={settings?.mail} />
                 <main>

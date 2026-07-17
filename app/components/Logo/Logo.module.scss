@@ -9,6 +9,9 @@
   aspect-ratio: 4 / 1;
   opacity: 0;
   cursor: pointer;
+  // Safari has a compositing bug where backdrop-filter + mask-image on
+  // .backdrop can bleed its blur far outside this box — clip it here.
+  overflow: hidden;
 
   @media (max-width: 768px) {
     max-width: 100vw;
