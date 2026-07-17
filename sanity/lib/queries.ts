@@ -18,10 +18,7 @@ const mediaFragment = groq`
       image {
         hotspot,
         crop,
-        asset-> {
-          _id,
-          metadata { dimensions { width, height } }
-        }
+        asset-> { _id }
       },
       alt,
       caption

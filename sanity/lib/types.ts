@@ -6,12 +6,7 @@ export interface MediaImage {
   _type: 'mediaImage'
   _key: string
   // asset is dereferenced (asset->) in the query, so this carries an _id, not a _ref
-  image: SanityImageSource & {
-    asset: {
-      _id: string
-      metadata?: { dimensions?: { width: number; height: number } }
-    }
-  }
+  image: SanityImageSource & { asset: { _id: string } }
   alt?: string
   caption?: string
 }
