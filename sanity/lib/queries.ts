@@ -2,6 +2,12 @@ import { groq } from 'next-sanity'
 import { client } from './client'
 import type { Project, OldProject, SiteSettings } from './types'
 
+// Sanity's own CDN (useCdn: true) already serves near-instant, edge-cached
+// reads — this just stops Next from re-hitting it on every single request.
+// Content here doesn't change second-to-second, so a short revalidate window
+// is enough to cut redundant fetches without staling too badly.
+const REVALIDATE_SECONDS = 60
+
 // ─── Fragments ───────────────────────────────────────────────────────────────
 
 const mediaFragment = groq`
@@ -9,7 +15,14 @@ const mediaFragment = groq`
     _type,
     _key,
     _type == "mediaImage" => {
-      image { ..., asset-> },
+      image {
+        hotspot,
+        crop,
+        asset-> {
+          _id,
+          metadata { dimensions { width, height } }
+        }
+      },
       alt,
       caption
     },
@@ -34,7 +47,9 @@ export async function getAllProjects(): Promise<Project[]> {
       title,
       slug,
       ${mediaFragment}
-    }`
+    }`,
+    {},
+    { next: { revalidate: REVALIDATE_SECONDS } }
   )
 }
 
@@ -47,7 +62,8 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
       slug,
       ${mediaFragment}
     }`,
-    { slug }
+    { slug },
+    { next: { revalidate: REVALIDATE_SECONDS } }
   )
 }
 
@@ -61,7 +77,9 @@ export async function getAllOldProjects(): Promise<OldProject[]> {
       title,
       slug,
       ${mediaFragment}
-    }`
+    }`,
+    {},
+    { next: { revalidate: REVALIDATE_SECONDS } }
   )
 }
 
@@ -74,7 +92,8 @@ export async function getOldProjectBySlug(slug: string): Promise<OldProject | nu
       slug,
       ${mediaFragment}
     }`,
-    { slug }
+    { slug },
+    { next: { revalidate: REVALIDATE_SECONDS } }
   )
 }
 
@@ -104,6 +123,8 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
       favicon,
       "backgroundVideoUrl": backgroundVideo.asset->url,
       "whoWeAreImageUrl": whoWeAreImage.asset->url,
-    }`
+    }`,
+    {},
+    { next: { revalidate: REVALIDATE_SECONDS } }
   )
 }

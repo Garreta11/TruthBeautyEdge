@@ -1,9 +1,10 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
+import Image from 'next/image'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { OldProject, MediaItem } from '@/sanity/lib/types'
-import { urlFor } from '@/sanity/lib/image'
+import { urlFor, sanityImageLoader } from '@/sanity/lib/image'
 import { usePanel } from '@/app/context/PanelContext'
 import VideoPlayer, { pauseVideoOutside } from '@/app/components/VideoPlayer/VideoPlayer'
 import styles from './WorkRow.module.scss'
@@ -31,14 +32,24 @@ const components: PortableTextComponents = {
 
 function MediaCell({ item }: { item: MediaItem }) {
   if (item._type === 'mediaImage') {
-    // Rows display at up to ~100dvh/2 tall — request roughly that size (at 2x
-    // for retina) instead of the original upload, and let Sanity serve
-    // WebP/AVIF where supported.
-    const src = urlFor(item.image).height(1200).auto('format').quality(75).url()
+    const dimensions = item.image.asset?.metadata?.dimensions
+    // Rows display at up to ~100dvh/2 tall — the loader below still asks
+    // Sanity for a size matching the actual rendered box; these are just the
+    // real asset dimensions next/image needs to preserve aspect ratio and
+    // avoid layout shift while it loads.
+    const width = dimensions?.width ?? 1200
+    const height = dimensions?.height ?? 1200
+    const src = urlFor(item.image).url()
     return (
       <div className={styles.cell}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt={item.alt ?? ''} loading="lazy" />
+        <Image
+          loader={sanityImageLoader}
+          src={src}
+          alt={item.alt ?? ''}
+          width={width}
+          height={height}
+          loading="lazy"
+        />
       </div>
     )
   }

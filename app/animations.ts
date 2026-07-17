@@ -88,3 +88,12 @@ export function workpageTransitionOut(onComplete?: () => void) {
     { opacity: 0, duration: 1, ease: 'power1.out', stagger: 0.1 }
   )
 }
+
+// Reveals the logo, nav, and background video immediately (no animation) —
+// for routes where the homepageTransition that normally reveals them never
+// runs, e.g. landing directly on a locked /work deep link. gsap.set's
+// selector targeting (unlike a plain document.querySelector) correctly
+// applies to every match, not just the first.
+export function revealChrome() {
+  gsap.set(['[data-logo]', '[data-nav-els]', '[data-video-bg]'], { opacity: 1 })
+}

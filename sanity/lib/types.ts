@@ -5,7 +5,13 @@ import type { SanityImageSource } from '@sanity/image-url'
 export interface MediaImage {
   _type: 'mediaImage'
   _key: string
-  image: SanityImageSource & { asset: { _ref: string } }
+  // asset is dereferenced (asset->) in the query, so this carries an _id, not a _ref
+  image: SanityImageSource & {
+    asset: {
+      _id: string
+      metadata?: { dimensions?: { width: number; height: number } }
+    }
+  }
   alt?: string
   caption?: string
 }

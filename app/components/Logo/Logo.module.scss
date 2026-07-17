@@ -9,9 +9,6 @@
   opacity: 0;
   cursor: pointer;
   aspect-ratio: 944 / 159;
-  // Safari has a compositing bug where backdrop-filter + mask-image on
-  // .backdrop can bleed its blur far outside this box — clip it here.
-  overflow: hidden;
 
   @media (max-width: 768px) {
     max-width: 100vw;
@@ -35,8 +32,8 @@
 .backdrop {
   position: absolute;
   inset: 0;
-  backdrop-filter: blur(100px);
-  -webkit-backdrop-filter: blur(100px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
@@ -44,20 +41,6 @@
   -webkit-mask-position: center;
   mask-position: center;
   aspect-ratio: 944 / 159;
-
-  // Safari (macOS and iOS) has a compositing bug combining backdrop-filter
-  // with mask-image on the same element — it either bleeds the blur far
-  // outside this box or drops the effect entirely. `-webkit-hyphens: none`
-  // is a reliable Safari-only @supports sniff: swap backdrop-filter (which
-  // samples the video behind it) for a plain blurred fill, still clipped by
-  // the same mask, so the glow stays a static soft white instead of showing
-  // blurred video through the letterforms.
-  @supports (-webkit-hyphens: none) {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: rgba(255, 255, 255, 0.4);
-    filter: blur(24px);
-  }
 }
 
 .img {
