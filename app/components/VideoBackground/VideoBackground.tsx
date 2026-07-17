@@ -17,9 +17,10 @@ export default function VideoBackground({ url, infoImageUrl }: Props) {
   const pathname = usePathname()
   const { unlocked } = useWorkAccess()
   const { openPanel, setOpenPanel } = usePanel()
-  const isWorkUnlocked = pathname === '/work' && unlocked
+  const isWork = pathname === '/work'
+  const isWorkUnlocked = isWork && unlocked
   const isHome = pathname === '/'
-  const isWorkLocked = pathname === '/work' && !unlocked
+  const isWorkLocked = isWork && !unlocked
 
   useEffect(() => {
     const video = videoRef.current
@@ -39,7 +40,7 @@ export default function VideoBackground({ url, infoImageUrl }: Props) {
 
   return (
     <>
-      <div className={styles.wrapper}>
+      <div className={`${styles.wrapper} ${isWork ? styles.aboveWork : ''}`}>
         <video
           ref={videoRef}
           className={styles.video}

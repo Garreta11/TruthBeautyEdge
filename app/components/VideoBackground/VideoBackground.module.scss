@@ -5,6 +5,14 @@
   overflow: hidden;
   // Scopes mix-blend-mode below to just this group, so .infoImage blends with .video
   isolation: isolate;
+  // Purely decorative — never intercepts clicks meant for content above or below it
+  pointer-events: none;
+
+  // On /work, WorkScroll's rows are normal-flow content and would otherwise
+  // paint over this (it's z-index: -1) — rise above them there.
+  &.aboveWork {
+    z-index: 1;
+  }
 }
 
 .video {
@@ -13,7 +21,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(44px) brightness(1);
+  /* filter: blur(44px) brightness(1); */
+  filter: blur(40px) brightness(1);
   opacity: 0;
   transform: scale(1.1);
 }
