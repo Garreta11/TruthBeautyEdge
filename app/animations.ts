@@ -24,7 +24,7 @@ export function homepageTransition(logoEl: Element | null, onLogoTop?: () => voi
     {
       top: 10,
       left: 10,
-      y: 0,
+      transform: 'translate(0, 0)',
       duration: 2,
       ease: 'power2.inOut',
       onComplete: () => onLogoTop?.(),
