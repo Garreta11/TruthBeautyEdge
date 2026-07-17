@@ -44,65 +44,127 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
 
   if (pathname.startsWith('/studio')) return null
 
+  // Defined once, rendered into both the desktop and mobile <nav> trees below —
+  // each render creates its own independent instance (own state/effects), but
+  // the markup itself only needs to be written once.
+  const descriptionEl = (
+    <div className={styles.nav__description}>
+      {description && <p>{description}</p>}
+    </div>
+  )
+
+  const viewWorkEl = (
+    <div className={styles.nav__view_work}>
+      <p className={`${styles.createdWith} ${workAccessGranted ? styles.visible : ''}`}>
+        {checkWork?.createdWith}
+      </p>
+      <div className={`${styles.workRequestGroup} ${workAccessGranted ? '' : styles.visible}`}>
+        <WorkRequest checkWork={checkWork?.label} />
+        {pathname === '/work' && (
+          <WorkGate mail={reachOut?.mail} subject={mail?.subject} body={mail?.body} />
+        )}
+      </div>
+    </div>
+  )
+
+  const infoEl = (
+    <div className={styles.nav__info}>
+      {info && (
+        <Info
+          label={info.label}
+          body={info.body}
+          open={openPanel === 'info'}
+          onOpen={() => setOpenPanel('info')}
+          onClose={() => setOpenPanel(null)}
+        />
+      )}
+    </div>
+  )
+
+  const citiesEl = (
+    <div className={styles.nav__cities}>
+      <p>{reachOut?.cities?.[1]?.city}</p>
+      <p>{reachOut?.cities?.[0]?.city}</p>
+    </div>
+  )
+
+  const allRightsEl = (
+    <div className={styles.nav__allrights}>
+      <p>©2026 All rights reserved</p>
+    </div>
+  )
+
+  const linksEl = (
+    <div className={styles.nav__links}>
+      <Link href="https://www.instagram.com/truthbeautyedge/" target='_blank'>Instagram</Link>
+    </div>
+  )
+
+  const reachOutEl = (
+    <div className={styles.nav__reach_out}>
+      {reachOut && (
+        <ReachOut
+          label={reachOut.label}
+          cities={reachOut.cities}
+          mail={reachOut.mail}
+          open={openPanel === 'reachOut'}
+          onOpen={() => setOpenPanel('reachOut')}
+          onClose={() => setOpenPanel(null)}
+        />
+      )}
+    </div>
+  )
+
   return (
     <>
       <Logo url={logo || "/logo.svg"} alt="Truth Beauty Edge" onTopComplete={() => setLogoReady(true)} />
-      <nav className={`${styles.nav} grid`} data-nav-els>
-        
-        <div className={styles.nav__description}>
-          {description && <p>{description}</p>}
-        </div>
 
-        <div className={styles.nav__view_work}>
-          <p className={`${styles.createdWith} ${workAccessGranted ? styles.visible : ''}`}>
-            {checkWork?.createdWith}
-          </p>
-          <div className={`${styles.workRequestGroup} ${workAccessGranted ? '' : styles.visible}`}>
-            <WorkRequest checkWork={checkWork?.label} />
-            {pathname === '/work' && (
-              <WorkGate mail={reachOut?.mail} subject={mail?.subject} body={mail?.body} />
-            )}
+      {/* Single [data-nav-els] wrapper — animations.ts / WorkContent.tsx target
+          exactly one element to fade both nav variants in together. */}
+      <div className={styles.navRoot} data-nav-els>
+        <nav className={styles.nav}>
+          <div className={`${styles.row} ${styles.row1}`}>
+            {descriptionEl}
           </div>
-        </div>
 
-        <div className={styles.nav__info}>
-          {info && (
-            <Info
-              label={info.label}
-              body={info.body}
-              open={openPanel === 'info'}
-              onOpen={() => setOpenPanel('info')}
-              onClose={() => setOpenPanel(null)}
-            />
-          )}
-        </div>
+          <div className={`${styles.row} ${styles.row2}`}>
+            {viewWorkEl}
+            {infoEl}
+          </div>
 
-        <div className={styles.nav__cities}>
-          <p>{reachOut?.cities?.[1]?.city}</p>
-          <p>{reachOut?.cities?.[0]?.city}</p>
-        </div>
+          <div className={`${styles.row} ${styles.row3}`}>
+            {citiesEl}
+            {allRightsEl}
+            {linksEl}
+            {reachOutEl}
+          </div>
+        </nav>
 
-        <div className={styles.nav__allrights}>
-          <p>©2026 All rights reserved</p>
-        </div>
+        <nav className={styles.navMobile}>
+          <div className={styles.mrow} />
 
-        <div className={styles.nav__links}>
-          <Link href="https://www.instagram.com/truthbeautyedge/" target='_blank'>Instagram</Link>
-        </div>
+          <div className={`${styles.mrow} ${styles.mrow2}`}>
+            {descriptionEl}
+          </div>
 
-        <div className={styles.nav__reach_out}>
-          {reachOut && (
-            <ReachOut
-              label={reachOut.label}
-              cities={reachOut.cities}
-              mail={reachOut.mail}
-              open={openPanel === 'reachOut'}
-              onOpen={() => setOpenPanel('reachOut')}
-              onClose={() => setOpenPanel(null)}
-            />
-          )}
-        </div>
-      </nav>
+          <div className={styles.mrow} />
+
+          <div className={`${styles.mrow} ${styles.mrow4}`}>
+            {viewWorkEl}
+            {infoEl}
+          </div>
+
+          <div className={`${styles.mrow} ${styles.mrow5}`}>
+            {citiesEl}
+            {reachOutEl}
+          </div>
+
+          <div className={`${styles.mrow} ${styles.mrow6}`}>
+            {allRightsEl}
+            {linksEl}
+          </div>
+        </nav>
+      </div>
     </>
   )
 }

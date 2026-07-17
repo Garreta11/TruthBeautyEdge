@@ -1,52 +1,97 @@
+// Wraps both the desktop and mobile <nav> trees so animations.ts / WorkContent.tsx
+// only ever have a single [data-nav-els] element to fade in/out.
+.navRoot {
+  opacity: 0;
+}
+
 .nav {
   position: fixed;
   inset: 0;
   z-index: 10;
   width: 100dvw;
   height: 100dvh;
-  // .grid provides 12 columns (3 on mobile) + padding-inline + column-gap
+  display: grid;
   grid-template-rows: repeat(3, 1fr);
+  padding: var(--margin);
   pointer-events: none;
 
-  opacity: 0;
-
-  // Only interactive children receive pointer events
-  > * {
-    pointer-events: all;
+  @media (max-width: 768px) {
+    display: none;
   }
+}
+
+.navMobile {
+  display: none;
 
   @media (max-width: 768px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    display: grid;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    width: 100dvw;
+    height: 100dvh;
     grid-template-rows: repeat(6, 1fr);
-    gap: 10px;
+    padding: var(--margin);
+    pointer-events: none;
     font-size: 1rem;
   }
 }
 
-.nav__description {
-  grid-column: 12;
-  grid-row: 1;
-  align-self: end;
-  justify-self: end;
-  white-space: nowrap;
-  text-align: right;
-  color: white;
+.row,
+.mrow {
+  display: flex;
 
-  @media (max-width: 768px) {
-    grid-column: 3;
-    grid-row: 2;
-    align-self: center;
-    justify-self: end;
-    text-align: right;
-    white-space: nowrap;
+  // Only the actual interactive content re-enables pointer events — the row
+  // itself, and any empty space within it, stays click-through.
+  > * {
+    pointer-events: all;
   }
 }
 
+.row {
+  align-items: flex-end;
+}
+
+.row1 {
+  justify-content: flex-end;
+}
+
+.row2,
+.row3 {
+  justify-content: space-between;
+}
+
+// row 2: description, right-aligned, centered in the row
+.mrow2 {
+  justify-content: flex-end;
+  align-items: center;
+}
+
+// row 4: view_work + info, space-between, top of the row
+.mrow4 {
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+// row 5: cities + reach_out, space-between, middle of the row
+.mrow5 {
+  justify-content: space-between;
+  align-items: center;
+}
+
+// row 6: all-rights + links, space-between, bottom of the row
+.mrow6 {
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.nav__description {
+  white-space: nowrap;
+  text-align: right;
+  color: white;
+}
+
 .nav__view_work {
-  grid-column: 1;
-  grid-row: 2;
-  align-self: end;
-  justify-self: start;
   white-space: nowrap;
   color: white;
   position: relative;
@@ -58,13 +103,6 @@
 
   > * {
     grid-area: stack;
-  }
-
-  @media (max-width: 768px) {
-    grid-column: 1;
-    grid-row: 4;
-    align-self: start;
-    justify-self: start;
   }
 }
 
@@ -93,82 +131,29 @@
 }
 
 .nav__info {
-  grid-column: 12;
-  grid-row: 2;
-  align-self: end;
-  justify-self: end;
   color: white;
-
-  @media (max-width: 768px) {
-    grid-column: 3;
-    grid-row: 4;
-    align-self: start;
-    justify-self: end;
-  }
 }
 
 .nav__cities {
-  grid-column: 1;
-  grid-row: 3;
-  align-self: end;
-  justify-self: start;
   display: flex;
   gap: 30px;
   white-space: nowrap;
   color: white;
 
   @media (max-width: 768px) {
-    grid-column: 1;
-    grid-row: 5;
-    align-self: center;
-    justify-self: start;
     white-space: normal;
     max-width: 48vw;
   }
 }
 
 .nav__allrights {
-  grid-column: 5;
-  grid-row: 3;
-  align-self: end;
-  justify-self: end;
   white-space: nowrap;
-
-  @media (max-width: 768px) {
-    grid-column: 1;
-    grid-row: 6;
-    align-self: end;
-    justify-self: start;
-  }
 }
 
 .nav__links {
-  grid-column: 10;
-  grid-row: 3;
-  align-self: end;
-  justify-self: end;
   white-space: nowrap;
-
-  @media (max-width: 768px) {
-    grid-column: 3;
-    grid-row: 6;
-    align-self: end;
-    justify-self: end;
-    text-align: right;
-  }
 }
 
 .nav__reach_out {
-  grid-column: 12;
-  grid-row: 3;
-  align-self: end;
-  justify-self: end;
   color: white;
-
-  @media (max-width: 768px) {
-    grid-column: 3;
-    grid-row: 5;
-    align-self: center;
-    justify-self: end;
-  }
 }
