@@ -68,9 +68,11 @@ export function workpageTransition() {
   const tl = gsap.timeline()
 
   const video = document.querySelector<HTMLVideoElement>('[data-video-bg]')
+  const videoVolume = document.querySelector<HTMLParagraphElement>('[data-video-volume]')
   const logo = document.querySelector<HTMLDivElement>('[data-logo]')
 
   tl.to(video, { opacity: 0, duration: 1, ease: 'power1.out' })
+  tl.to(videoVolume, { opacity: 0, duration: 1, ease: 'power1.out' }, '<')
   tl.to(logo, { opacity: 1, duration: 1, ease: 'power2.inOut' }, '<')
   tl.fromTo(
     '[data-work-row]',

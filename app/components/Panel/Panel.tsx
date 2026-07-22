@@ -13,7 +13,7 @@ interface Props {
 }
 
 // Sequence: content fades out (0.1s), then the panel shrinks + fades out (0.35s, starting 0.1s in)
-const CLOSE_FADE_MS = 460
+const CLOSE_FADE_MS = 0
 
 export default function Panel({ label, open: openProp, onOpen, onClose, children }: Props) {
   const { setInteracted } = useInteraction()

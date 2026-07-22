@@ -53,7 +53,6 @@ export default function VideoBackground({ url, infoImageUrl }: Props) {
           preload="metadata"
         />
         {infoImageUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             className={`${styles.infoImage} ${openPanel === 'info' ? styles.visible : ''}`}
             src={infoImageUrl}

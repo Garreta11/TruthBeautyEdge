@@ -46,7 +46,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-neue-haas);
-  font-size: 20px;
+  font-size: 15px;
   letter-spacing: 0.05em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -71,7 +71,7 @@ input,
 textarea,
 select {
   font-family: inherit;
-  font-size: 20px;
+  font-size: 15px;
   letter-spacing: inherit;
   @media (max-width: 768px) {
     font-size: 1rem;

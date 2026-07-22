@@ -8,6 +8,8 @@
   // Purely decorative — never intercepts clicks meant for content above or below it
   pointer-events: none;
 
+  mix-blend-mode: screen;
+
   // On /work, WorkScroll's rows are normal-flow content and would otherwise
   // paint over this (it's z-index: -1) — rise above them there.
   &.aboveWork {
