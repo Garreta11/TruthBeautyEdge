@@ -20,15 +20,10 @@ export default function Logo({ url, alt, onTopComplete }: Props) {
   const [loaded, setLoaded] = useState(false)
   const [ratio, setRatio] = useState<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
-    if (document.readyState === 'complete') {
-      setLoaded(true)
-      return
-    }
-    const handleLoad = () => setLoaded(true)
-    window.addEventListener('load', handleLoad)
-    return () => window.removeEventListener('load', handleLoad)
+    if (imgRef.current?.complete) setLoaded(true)
   }, [])
 
   function handleClick() {
@@ -71,13 +66,16 @@ export default function Logo({ url, alt, onTopComplete }: Props) {
         }}
       />
       <img
+        ref={imgRef}
         className={styles.img}
         src={url}
         alt={alt ?? 'Logo'}
         onLoad={(e) => {
           const { naturalWidth, naturalHeight } = e.currentTarget
           if (naturalWidth && naturalHeight) setRatio(naturalWidth / naturalHeight)
+          setLoaded(true)
         }}
+        onError={() => setLoaded(true)}
       />
     </div>
   )
