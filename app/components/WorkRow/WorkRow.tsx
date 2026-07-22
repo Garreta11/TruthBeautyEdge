@@ -85,7 +85,6 @@ interface Props {
 
 export default function WorkRow({ project }: Props) {
   const stripRef = useRef<HTMLDivElement>(null)
-  const scrollResetTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { openPanel } = usePanel()
 
   useEffect(() => {
@@ -95,28 +94,15 @@ export default function WorkRow({ project }: Props) {
     el.scrollLeft = el.scrollWidth / 3
   }, [])
 
-  // Cleared on every scroll tick and only allowed to fire once ticks stop —
-  // i.e. once iOS's momentum scroll has fully settled. Resetting scrollLeft
-  // while that momentum animation is still running causes Safari to abandon
-  // the gesture and the strip stops responding to touch entirely.
-  useEffect(() => {
-    return () => {
-      if (scrollResetTimeout.current !== null) clearTimeout(scrollResetTimeout.current)
-    }
-  }, [])
-
   function handleScroll() {
     const el = stripRef.current
     if (!el) return
-    if (scrollResetTimeout.current !== null) clearTimeout(scrollResetTimeout.current)
-    scrollResetTimeout.current = setTimeout(() => {
-      const setWidth = el.scrollWidth / 3
-      if (el.scrollLeft < 2) {
-        el.scrollLeft = setWidth
-      } else if (el.scrollLeft > setWidth * 2 - 2) {
-        el.scrollLeft = setWidth
-      }
-    }, 150)
+    const setWidth = el.scrollWidth / 3
+    if (el.scrollLeft < 2) {
+      el.scrollLeft = setWidth
+    } else if (el.scrollLeft > setWidth * 2 - 2) {
+      el.scrollLeft = setWidth
+    }
   }
 
   return (

@@ -13,17 +13,6 @@ interface Props {
 
 export default function WorkScroll({ projects }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const scrollResetTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  // Cleared on every scroll tick and only allowed to fire once ticks stop —
-  // i.e. once iOS's momentum scroll has fully settled. Resetting scrollTop
-  // while that momentum animation is still running causes Safari to abandon
-  // the gesture and the container stops responding to touch entirely.
-  useEffect(() => {
-    return () => {
-      if (scrollResetTimeout.current !== null) clearTimeout(scrollResetTimeout.current)
-    }
-  }, [])
 
   useEffect(() => {
     const el = scrollRef.current
@@ -86,15 +75,12 @@ export default function WorkScroll({ projects }: Props) {
   function handleScroll() {
     const el = scrollRef.current
     if (!el) return
-    if (scrollResetTimeout.current !== null) clearTimeout(scrollResetTimeout.current)
-    scrollResetTimeout.current = setTimeout(() => {
-      const setHeight = el.scrollHeight / 3
-      if (el.scrollTop < 2) {
-        el.scrollTop = setHeight
-      } else if (el.scrollTop > setHeight * 2 - 2) {
-        el.scrollTop = setHeight
-      }
-    }, 150)
+    const setHeight = el.scrollHeight / 3
+    if (el.scrollTop < 2) {
+      el.scrollTop = setHeight
+    } else if (el.scrollTop > setHeight * 2 - 2) {
+      el.scrollTop = setHeight
+    }
   }
 
   return (
