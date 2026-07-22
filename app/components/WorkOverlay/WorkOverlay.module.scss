@@ -2,7 +2,8 @@
   position: fixed;
   inset: 0;
   z-index: 9;
-  background-color: rgba(0, 0, 0, .5);
+  /* background-color: rgba(0, 0, 0, .5); */
+  background-color: #ffffff26;
   pointer-events: none;
   transition: var(--transition);
   opacity: 0;
