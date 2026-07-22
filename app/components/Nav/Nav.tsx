@@ -48,7 +48,7 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
   // each render creates its own independent instance (own state/effects), but
   // the markup itself only needs to be written once.
   const descriptionEl = (
-    <div className={styles.nav__description}>
+    <div className={`${styles.nav__description} ${workAccessGranted ? styles.hiddenMobile : ''}`}>
       {description && <p>{description}</p>}
     </div>
   )
@@ -82,7 +82,7 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
   )
 
   const citiesEl = (
-    <div className={styles.nav__cities}>
+    <div className={`${styles.nav__cities} ${workAccessGranted ? styles.hiddenMobile : ''}`}>
       <p>{reachOut?.cities?.[1]?.city}</p>
       <p>{reachOut?.cities?.[0]?.city}</p>
     </div>

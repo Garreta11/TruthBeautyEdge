@@ -134,6 +134,12 @@
   color: white;
 }
 
+.hiddenMobile {
+  @media (max-width: 768px) {
+    visibility: hidden;
+  }
+}
+
 .nav__cities {
   display: flex;
   gap: 30px;

@@ -29,7 +29,7 @@ export function homepageTransition(logoEl: Element | null, onLogoTop?: () => voi
       ease: 'power2.inOut',
       onComplete: () => onLogoTop?.(),
     },
-    '+=0.3'
+    '+=0.5'
   )
 
   tl.fromTo(
