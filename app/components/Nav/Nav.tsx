@@ -90,7 +90,7 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
 
   const allRightsEl = (
     <div className={styles.nav__allrights}>
-      <p>©2026 All rights reserved</p>
+      <p>&copy;{new Date().getFullYear()} All rights reserved</p>
     </div>
   )
 
