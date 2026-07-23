@@ -13,6 +13,32 @@ interface Props {
 
 export default function WorkScroll({ projects }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const isTouchingRef = useRef(false)
+
+  // Resetting scrollTop while a touch gesture is still active makes Safari
+  // abandon it and the container stops responding to touch entirely, so the
+  // boundary correction below is skipped mid-touch and re-run on touchend.
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+
+    function onTouchStart() {
+      isTouchingRef.current = true
+    }
+    function onTouchEnd() {
+      isTouchingRef.current = false
+      handleScroll()
+    }
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true })
+    el.addEventListener('touchend', onTouchEnd, { passive: true })
+    el.addEventListener('touchcancel', onTouchEnd, { passive: true })
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchend', onTouchEnd)
+      el.removeEventListener('touchcancel', onTouchEnd)
+    }
+  }, [])
 
   useEffect(() => {
     const el = scrollRef.current
@@ -75,6 +101,7 @@ export default function WorkScroll({ projects }: Props) {
   function handleScroll() {
     const el = scrollRef.current
     if (!el) return
+    if (isTouchingRef.current) return
     const setHeight = el.scrollHeight / 3
     if (el.scrollTop < 2) {
       el.scrollTop = setHeight
