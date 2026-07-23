@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import Lenis from 'lenis'
 
-export default function LenisProvider({ children }: { children: React.ReactNode }) {
+/* export default function LenisProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   useEffect(() => {
@@ -24,6 +24,11 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
       lenis.destroy()
     }
   }, [pathname])
+
+  return <>{children}</>
+} */
+
+  export default function LenisProvider({ children }: { children: React.ReactNode }) {
 
   return <>{children}</>
 }
