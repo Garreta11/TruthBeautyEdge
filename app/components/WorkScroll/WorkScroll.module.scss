@@ -5,6 +5,8 @@
   overflow-y: scroll;
   overflow-x: hidden;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 
   &::-webkit-scrollbar {
     display: none;

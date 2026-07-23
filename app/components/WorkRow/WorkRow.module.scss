@@ -56,6 +56,8 @@ $gap: 10px;
   overflow-x: scroll;
   overflow-y: hidden;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
 
   &::-webkit-scrollbar {
     display: none;
