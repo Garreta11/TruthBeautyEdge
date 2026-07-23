@@ -7,7 +7,7 @@ $gap: 10px;
   height: $row-height;
   padding-block: 5px;
 
-  filter: brightness(0.2);
+  /* filter: brightness(0.2); */
   /* transition: var(--transition); */
 
   opacity: 0;
@@ -15,7 +15,7 @@ $gap: 10px;
   // Hover only applies on devices that actually support it — on touch,
   // marking a row [data-centered] (set from WorkScroll's scroll listener)
   // stands in for hover instead.
-  @media (hover: hover) and (pointer: fine) {
+  /* @media (hover: hover) and (pointer: fine) {
     &:hover {
       filter: brightness(1);
     }
@@ -33,7 +33,7 @@ $gap: 10px;
     &.locked[data-centered='true'] {
       filter: brightness(0.2);
     }
-  }
+  } */
 
   // `filter` establishes a new containing block, which would make a
   // `position: fixed` expanded video position itself relative to this
