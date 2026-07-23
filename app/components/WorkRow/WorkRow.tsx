@@ -111,7 +111,7 @@ export default function WorkRow({ project }: Props) {
       className={`${styles.row} ${openPanel ? styles.locked : ''}`}
       onMouseEnter={(e) => pauseVideoOutside(e.currentTarget)}
     >
-      <div className={styles.strip} ref={stripRef} onScroll={handleScroll}>
+      <div className={styles.strip} ref={stripRef} onScroll={handleScroll} data-lenis-prevent>
         {[0, 1, 2].map((copy) =>
           project.media?.map((item) => (
             <MediaCell key={`${item._key}-${copy}`} item={item} />

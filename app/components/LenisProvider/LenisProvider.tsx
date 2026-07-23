@@ -10,11 +10,7 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
   useEffect(() => {
     if (pathname.startsWith('/studio')) return
 
-    const lenis = new Lenis({
-      smoothWheel: true,
-      syncTouch: false,
-      allowNestedScroll: true
-    })
+    const lenis = new Lenis()
 
     function raf(time: number) {
       lenis.raf(time)

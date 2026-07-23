@@ -84,7 +84,7 @@ export default function WorkScroll({ projects }: Props) {
   }
 
   return (
-    <div className={styles.scroll} ref={scrollRef} onScroll={handleScroll}>
+    <div className={styles.scroll} ref={scrollRef} onScroll={handleScroll} data-lenis-prevent>
       {[0, 1, 2].map((copy) =>
         projects.map((project) => (
           <WorkRow key={`${project._id}-${copy}`} project={project} />
