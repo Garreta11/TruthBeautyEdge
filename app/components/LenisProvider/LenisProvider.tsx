@@ -4,13 +4,17 @@ import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import Lenis from 'lenis'
 
-/* export default function LenisProvider({ children }: { children: React.ReactNode }) {
+export default function LenisProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   useEffect(() => {
     if (pathname.startsWith('/studio')) return
 
-    const lenis = new Lenis()
+    const lenis = new Lenis({
+      smoothWheel: true,
+      syncTouch: false,
+      allowNestedScroll: true
+    })
 
     function raf(time: number) {
       lenis.raf(time)
@@ -24,11 +28,6 @@ import Lenis from 'lenis'
       lenis.destroy()
     }
   }, [pathname])
-
-  return <>{children}</>
-} */
-
-  export default function LenisProvider({ children }: { children: React.ReactNode }) {
 
   return <>{children}</>
 }
