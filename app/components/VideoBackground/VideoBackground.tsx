@@ -21,6 +21,12 @@ export default function VideoBackground({ url, infoImageUrl }: Props) {
   const isWorkUnlocked = isWork && unlocked
   const isHome = pathname === '/'
   const isWorkLocked = isWork && !unlocked
+  // The catcher only ever needs to do something when it can actually close a
+  // panel — everywhere else it must stay click-through, or it silently
+  // swallows every touch/click/scroll gesture on the page (it's a
+  // position: fixed, full-viewport sibling of <main>, so it paints above
+  // WorkScroll/WorkRow's plain in-flow content regardless of DOM order).
+  const catchesClicks = (isHome || isWorkLocked) && Boolean(openPanel)
 
   useEffect(() => {
     const video = videoRef.current
@@ -60,7 +66,10 @@ export default function VideoBackground({ url, infoImageUrl }: Props) {
           />
         )}
       </div>
-      <div className={styles.clickCatcher} onClick={handleVideoClick} />
+      <div
+        className={`${styles.clickCatcher} ${catchesClicks ? styles.active : ''}`}
+        onClick={handleVideoClick}
+      />
       <p
         className={`${styles.volume} ${!muted ? styles.active : ""} ${isWorkUnlocked ? styles.hidden : ''}`}
         onClick={() => setMuted((m) => !m)}
