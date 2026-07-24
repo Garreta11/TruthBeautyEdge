@@ -60,63 +60,63 @@ export default function WorkScroll({ projects }: Props) {
     })
   })
 
+  // Which row is "centered" (drives the brightness/hover-simulation and
+  // video-pause-outside behavior) is now detected via IntersectionObserver
+  // instead of scanning every row's getBoundingClientRect on every scroll
+  // frame — rootMargin shrinks the observed viewport to a thin band at the
+  // vertical center, so a row only triggers the callback when it crosses
+  // that line, and its rect comes for free from the entry instead of a
+  // forced layout read.
   useEffect(() => {
-    let rafId: number | null = null
+    const container = scrollRef.current
+    if (!container) return
+
+    const rows = container.querySelectorAll<HTMLElement>('[data-work-row]')
+    if (!rows.length) return
+
     let currentCentered: HTMLElement | null = null
+    const intersecting = new Map<HTMLElement, DOMRectReadOnly>()
 
-    function updateCentered() {
-      rafId = null
-
-      const rows =
-        scrollRef.current?.querySelectorAll<HTMLElement>('[data-work-row]')
-
-      if (!rows?.length) return
-
-      const viewportCenter = window.innerHeight / 2
-
-      let closest: HTMLElement | null = null
-      let closestDistance = Infinity
-
-      rows.forEach((row) => {
-        const rect = row.getBoundingClientRect()
-        const rowCenter = rect.top + rect.height / 2
-        const distance = Math.abs(rowCenter - viewportCenter)
-
-        if (distance < closestDistance) {
-          closestDistance = distance
-          closest = row
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const row = entry.target as HTMLElement
+          if (entry.isIntersecting) {
+            intersecting.set(row, entry.boundingClientRect)
+          } else {
+            intersecting.delete(row)
+          }
         }
-      })
 
-      rows.forEach((row) => {
-        row.setAttribute('data-centered', String(row === closest))
-      })
+        if (intersecting.size === 0) return
 
-      if (closest !== currentCentered) {
-        currentCentered = closest
-        pauseVideoOutside(closest)
-      }
-    }
+        const viewportCenter = window.innerHeight / 2
+        let closest: HTMLElement | null = null
+        let closestDistance = Infinity
 
-    updateCentered()
+        for (const [row, rect] of intersecting) {
+          const rowCenter = rect.top + rect.height / 2
+          const distance = Math.abs(rowCenter - viewportCenter)
+          if (distance < closestDistance) {
+            closestDistance = distance
+            closest = row
+          }
+        }
 
-    const scheduleUpdate = () => {
-      if (rafId !== null) return
-      rafId = requestAnimationFrame(updateCentered)
-    }
+        if (closest !== currentCentered) {
+          currentCentered?.setAttribute('data-centered', 'false')
+          closest?.setAttribute('data-centered', 'true')
+          currentCentered = closest
+          pauseVideoOutside(closest)
+        }
+      },
+      { rootMargin: '-49% 0px -49% 0px', threshold: 0 }
+    )
 
-    window.addEventListener('scroll', scheduleUpdate, { passive: true })
-    window.addEventListener('resize', scheduleUpdate)
+    rows.forEach((row) => observer.observe(row))
 
-    return () => {
-      window.removeEventListener('scroll', scheduleUpdate)
-      window.removeEventListener('resize', scheduleUpdate)
-
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId)
-      }
-    }
-  }, [])
+    return () => observer.disconnect()
+  }, [projects])
 
   return (
     <div className={styles.scroll} ref={scrollRef}>
