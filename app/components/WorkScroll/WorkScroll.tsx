@@ -23,8 +23,9 @@ export default function WorkScroll({ projects }: Props) {
 
 'use client'
 
+import { useRef } from 'react'
 import type { OldProject } from '@/sanity/lib/types'
-import WorkRow from '@/app/components/WorkRow/WorkRow'
+import WorkRow, { type StripGroups } from '@/app/components/WorkRow/WorkRow'
 import styles from './WorkScroll.module.scss'
 
 interface Props {
@@ -32,16 +33,18 @@ interface Props {
 }
 
 export default function WorkScroll({ projects }: Props) {
+  const stripGroups = useRef<StripGroups>(new Map()).current
+
   return (
     <div className={styles.scroll}>
       {projects.map((project) => (
-        <WorkRow key={`${project._id}`} project={project} />
+        <WorkRow key={`${project._id}`} project={project} stripGroups={stripGroups} />
       ))}
       {projects.length > 0 && (
-        <WorkRow key={`${projects[0]._id}-duplicate`} project={projects[0]} />
+        <WorkRow key={`${projects[0]._id}-duplicate`} project={projects[0]} stripGroups={stripGroups} />
       )}
-      {projects.length > 0 && (
-        <WorkRow key={`${projects[1]._id}-duplicate`} project={projects[1]} />
+      {projects.length > 1 && (
+        <WorkRow key={`${projects[1]._id}-duplicate`} project={projects[1]} stripGroups={stripGroups} />
       )}
     </div>
   )

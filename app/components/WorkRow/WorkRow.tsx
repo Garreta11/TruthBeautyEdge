@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, type RefObject } from 'react'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { OldProject, MediaItem } from '@/sanity/lib/types'
 import { urlFor } from '@/sanity/lib/image'
@@ -79,11 +79,15 @@ function MediaCell({ item }: { item: MediaItem }) {
   return null
 }
 
+type StripEntry = { el: HTMLDivElement; touching: RefObject<boolean> }
+export type StripGroups = Map<string, Set<StripEntry>>
+
 interface Props {
   project: OldProject
+  stripGroups?: StripGroups
 }
 
-export default function WorkRow({ project }: Props) {
+export default function WorkRow({ project, stripGroups }: Props) {
   const stripRef = useRef<HTMLDivElement>(null)
   const isTouchingRef = useRef(false)
   const { openPanel } = usePanel()
@@ -94,6 +98,41 @@ export default function WorkRow({ project }: Props) {
     // Start at the middle copy so both scroll directions work
     el.scrollLeft = el.scrollWidth / 3
   }, [])
+
+  // Register this row's strip so the other copy of the same project (see
+  // WorkScroll's duplicated rows for the vertical loop) can mirror its
+  // scrollLeft, keeping both copies of a row in sync.
+  useEffect(() => {
+    if (!stripGroups) return
+    const el = stripRef.current
+    if (!el) return
+
+    const entry: StripEntry = { el, touching: isTouchingRef }
+    let group = stripGroups.get(project._id)
+    if (!group) {
+      group = new Set()
+      stripGroups.set(project._id, group)
+    }
+    group.add(entry)
+
+    return () => {
+      group?.delete(entry)
+    }
+  }, [project._id, stripGroups])
+
+  // Never write to a sibling strip that's currently mid-touch — same reason
+  // the boundary correction below defers on this element until touchend.
+  function syncScrollLeft(value: number) {
+    const group = stripGroups?.get(project._id)
+    if (!group) return
+    group.forEach((entry) => {
+      if (entry.el === stripRef.current) return
+      if (entry.touching.current) return
+      if (Math.abs(entry.el.scrollLeft - value) > 0.5) {
+        entry.el.scrollLeft = value
+      }
+    })
+  }
 
   // Resetting scrollLeft while a touch gesture is still active makes Safari
   // abandon it and the container stops responding to touch entirely, so the
@@ -123,12 +162,17 @@ export default function WorkRow({ project }: Props) {
   function handleScroll() {
     const el = stripRef.current
     if (!el) return
+
+    syncScrollLeft(el.scrollLeft)
+
     if (isTouchingRef.current) return
     const setWidth = el.scrollWidth / 3
     if (el.scrollLeft < 2) {
       el.scrollLeft = setWidth
+      syncScrollLeft(el.scrollLeft)
     } else if (el.scrollLeft > setWidth * 2 - 2) {
       el.scrollLeft = setWidth
+      syncScrollLeft(el.scrollLeft)
     }
   }
 
