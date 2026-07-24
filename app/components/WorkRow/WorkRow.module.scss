@@ -49,19 +49,21 @@ $gap: 10px;
 
 .strip {
   flex: 1;
+  overflow: hidden;
+  // No native scroll happens here — horizontal gestures are read in JS and
+  // rendered via transform on .track, so hint the browser that it can start
+  // native vertical panning (page scroll) immediately without waiting on us.
+  touch-action: pan-y;
+}
+
+.track {
   display: flex;
   flex-direction: row;
   gap: $gap;
   padding-inline: var(--margin);
-  overflow-x: scroll;
-  overflow-y: hidden;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  /* touch-action: pan-x; */
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  height: 100%;
+  width: max-content;
+  will-change: transform;
 }
 
 .cell {

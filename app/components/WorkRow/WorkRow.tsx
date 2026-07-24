@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, type RefObject } from 'react'
+import { useRef, useEffect } from 'react'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { OldProject, MediaItem } from '@/sanity/lib/types'
 import { urlFor } from '@/sanity/lib/image'
@@ -79,102 +79,103 @@ function MediaCell({ item }: { item: MediaItem }) {
   return null
 }
 
-type StripEntry = { el: HTMLDivElement; touching: RefObject<boolean> }
-export type StripGroups = Map<string, Set<StripEntry>>
+// A row's horizontal position is virtual (no native scrollLeft at all), so
+// the original and duplicated copy of the same project (see WorkScroll's
+// duplicated rows for the vertical loop) share one state object and stay in
+// sync automatically instead of needing to mirror a DOM scroll position.
+export type HorizontalScrollState = {
+  target: number
+  current: number
+  tracks: Set<HTMLDivElement>
+}
+export type HorizontalScrollStates = Map<string, HorizontalScrollState>
 
 interface Props {
   project: OldProject
-  stripGroups?: StripGroups
+  horizontalStates?: HorizontalScrollStates
 }
 
-export default function WorkRow({ project, stripGroups }: Props) {
+// Below this, a touch gesture hasn't shown clear intent yet — keep reading
+// movement before locking it to the horizontal or vertical axis.
+const TOUCH_AXIS_THRESHOLD = 4
+
+export default function WorkRow({ project, horizontalStates }: Props) {
   const stripRef = useRef<HTMLDivElement>(null)
-  const isTouchingRef = useRef(false)
+  const trackRef = useRef<HTMLDivElement>(null)
   const { openPanel } = usePanel()
 
+  // Register this row's track into the shared state (rendered by
+  // WorkScroll's single rAF loop) and wire up axis-dominant gesture capture:
+  // horizontal wheel/drag moves the row and blocks page scroll for that
+  // gesture; vertical movement is left alone so the page scrolls normally.
   useEffect(() => {
-    const el = stripRef.current
-    if (!el) return
-    // Start at the middle copy so both scroll directions work
-    el.scrollLeft = el.scrollWidth / 3
-  }, [])
+    const strip = stripRef.current
+    const track = trackRef.current
+    if (!strip || !track || !horizontalStates) return
 
-  // Register this row's strip so the other copy of the same project (see
-  // WorkScroll's duplicated rows for the vertical loop) can mirror its
-  // scrollLeft, keeping both copies of a row in sync.
-  useEffect(() => {
-    if (!stripGroups) return
-    const el = stripRef.current
-    if (!el) return
-
-    const entry: StripEntry = { el, touching: isTouchingRef }
-    let group = stripGroups.get(project._id)
-    if (!group) {
-      group = new Set()
-      stripGroups.set(project._id, group)
+    let existingState = horizontalStates.get(project._id)
+    if (!existingState) {
+      existingState = { target: 0, current: 0, tracks: new Set() }
+      horizontalStates.set(project._id, existingState)
     }
-    group.add(entry)
+    const state = existingState
 
-    return () => {
-      group?.delete(entry)
+    state.tracks.add(track)
+
+    function onWheel(e: WheelEvent) {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return
+      e.preventDefault()
+      state.target += e.deltaX
     }
-  }, [project._id, stripGroups])
 
-  // Never write to a sibling strip that's currently mid-touch — same reason
-  // the boundary correction below defers on this element until touchend.
-  function syncScrollLeft(value: number) {
-    const group = stripGroups?.get(project._id)
-    if (!group) return
-    group.forEach((entry) => {
-      if (entry.el === stripRef.current) return
-      if (entry.touching.current) return
-      if (Math.abs(entry.el.scrollLeft - value) > 0.5) {
-        entry.el.scrollLeft = value
+    let axisLock: 'x' | 'y' | null = null
+    let lastX = 0
+    let lastY = 0
+
+    function onTouchStart(e: TouchEvent) {
+      const touch = e.touches[0]
+      lastX = touch.clientX
+      lastY = touch.clientY
+      axisLock = null
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      const touch = e.touches[0]
+      const dx = touch.clientX - lastX
+      const dy = touch.clientY - lastY
+
+      if (axisLock === null) {
+        if (Math.abs(dx) < TOUCH_AXIS_THRESHOLD && Math.abs(dy) < TOUCH_AXIS_THRESHOLD) return
+        axisLock = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
       }
-    })
-  }
 
-  // Resetting scrollLeft while a touch gesture is still active makes Safari
-  // abandon it and the container stops responding to touch entirely, so the
-  // boundary correction below is skipped mid-touch and re-run on touchend.
-  useEffect(() => {
-    const el = stripRef.current
-    if (!el) return
+      if (axisLock !== 'x') return
 
-    function onTouchStart() {
-      isTouchingRef.current = true
+      e.preventDefault()
+      state.target -= dx
+      lastX = touch.clientX
+      lastY = touch.clientY
     }
+
     function onTouchEnd() {
-      isTouchingRef.current = false
-      handleScroll()
+      axisLock = null
     }
 
-    el.addEventListener('touchstart', onTouchStart, { passive: true })
-    el.addEventListener('touchend', onTouchEnd, { passive: true })
-    el.addEventListener('touchcancel', onTouchEnd, { passive: true })
+    strip.addEventListener('wheel', onWheel, { passive: false })
+    strip.addEventListener('touchstart', onTouchStart, { passive: true })
+    strip.addEventListener('touchmove', onTouchMove, { passive: false })
+    strip.addEventListener('touchend', onTouchEnd, { passive: true })
+    strip.addEventListener('touchcancel', onTouchEnd, { passive: true })
+
     return () => {
-      el.removeEventListener('touchstart', onTouchStart)
-      el.removeEventListener('touchend', onTouchEnd)
-      el.removeEventListener('touchcancel', onTouchEnd)
+      state.tracks.delete(track)
+      strip.removeEventListener('wheel', onWheel)
+      strip.removeEventListener('touchstart', onTouchStart)
+      strip.removeEventListener('touchmove', onTouchMove)
+      strip.removeEventListener('touchend', onTouchEnd)
+      strip.removeEventListener('touchcancel', onTouchEnd)
     }
-  }, [])
-
-  function handleScroll() {
-    const el = stripRef.current
-    if (!el) return
-
-    syncScrollLeft(el.scrollLeft)
-
-    if (isTouchingRef.current) return
-    const setWidth = el.scrollWidth / 3
-    if (el.scrollLeft < 2) {
-      el.scrollLeft = setWidth
-      syncScrollLeft(el.scrollLeft)
-    } else if (el.scrollLeft > setWidth * 2 - 2) {
-      el.scrollLeft = setWidth
-      syncScrollLeft(el.scrollLeft)
-    }
-  }
+  }, [project._id, horizontalStates])
 
   return (
     <div
@@ -182,12 +183,14 @@ export default function WorkRow({ project, stripGroups }: Props) {
       className={`${styles.row} ${openPanel ? styles.locked : ''}`}
       onMouseEnter={(e) => pauseVideoOutside(e.currentTarget)}
     >
-      <div className={styles.strip} ref={stripRef} onScroll={handleScroll}>
-        {[0, 1, 2].map((copy) =>
-          project.media?.map((item) => (
-            <MediaCell key={`${item._key}-${copy}`} item={item} />
-          ))
-        )}
+      <div className={styles.strip} ref={stripRef}>
+        <div className={styles.track} ref={trackRef}>
+          {[0, 1, 2].map((copy) =>
+            project.media?.map((item) => (
+              <MediaCell key={`${item._key}-${copy}`} item={item} />
+            ))
+          )}
+        </div>
       </div>
     </div>
   )

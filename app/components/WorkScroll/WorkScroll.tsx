@@ -2,22 +2,49 @@
 
 import { useRef, useEffect } from 'react'
 import type { OldProject } from '@/sanity/lib/types'
-import WorkRow, { type StripGroups } from '@/app/components/WorkRow/WorkRow'
+import WorkRow, { type HorizontalScrollStates } from '@/app/components/WorkRow/WorkRow'
 import { pauseVideoOutside } from '@/app/components/VideoPlayer/VideoPlayer'
 import { workpageTransition } from '@/app/(site)/animations'
+import { useLenisRaf } from '@/app/components/LenisProvider/LenisProvider'
 import styles from './WorkScroll.module.scss'
 
 interface Props {
   projects: OldProject[]
 }
 
+const HORIZONTAL_LERP = 0.1
+
+function modulo(n: number, d: number) {
+  return ((n % d) + d) % d
+}
+
 export default function WorkScroll({ projects }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const stripGroups = useRef<StripGroups>(new Map()).current
+  const horizontalStates = useRef<HorizontalScrollStates>(new Map()).current
 
   useEffect(() => {
     workpageTransition()
   }, [])
+
+  // Single shared render loop for every row's virtual horizontal scroll:
+  // physics run once per project here, then get applied to every track
+  // registered for it — the original row and its duplicate share the same
+  // state object, so they stay in sync for free.
+  useLenisRaf(() => {
+    horizontalStates.forEach((state) => {
+      state.current += (state.target - state.current) * HORIZONTAL_LERP
+      if (state.tracks.size === 0) return
+
+      const [firstTrack] = state.tracks
+      const oneCopyWidth = firstTrack.scrollWidth / 3
+      if (oneCopyWidth <= 0) return
+
+      const offset = modulo(state.current, oneCopyWidth)
+      state.tracks.forEach((track) => {
+        track.style.transform = `translate3d(${-offset}px, 0, 0)`
+      })
+    })
+  })
 
   useEffect(() => {
     let rafId: number | null = null
@@ -80,13 +107,13 @@ export default function WorkScroll({ projects }: Props) {
   return (
     <div className={styles.scroll} ref={scrollRef}>
       {projects.map((project) => (
-        <WorkRow key={`${project._id}`} project={project} stripGroups={stripGroups} />
+        <WorkRow key={`${project._id}`} project={project} horizontalStates={horizontalStates} />
       ))}
       {projects.length > 0 && (
-        <WorkRow key={`${projects[0]._id}-duplicate`} project={projects[0]} stripGroups={stripGroups} />
+        <WorkRow key={`${projects[0]._id}-duplicate`} project={projects[0]} horizontalStates={horizontalStates} />
       )}
       {projects.length > 1 && (
-        <WorkRow key={`${projects[1]._id}-duplicate`} project={projects[1]} stripGroups={stripGroups} />
+        <WorkRow key={`${projects[1]._id}-duplicate`} project={projects[1]} horizontalStates={horizontalStates} />
       )}
     </div>
   )
