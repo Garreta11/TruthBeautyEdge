@@ -11,7 +11,16 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
   useEffect(() => {
     if (pathname.startsWith('/studio')) return
 
-    const lenis = new Lenis()
+    const isWorkpage = pathname === "/work";
+
+    const lenis = new Lenis({
+      lerp: 0.08,
+      wheelMultiplier: 1,
+      smoothWheel: true,
+      infinite: isWorkpage,
+      // Required by Lenis for `infinite` to track touch gestures correctly.
+      syncTouch: isWorkpage,
+    });
 
     function raf(time: number) {
       lenis.raf(time)
