@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useInteraction } from '@/app/context/InteractionContext'
-import { homepageTransition, workpageTransitionOut } from '@/app/animations'
+import { homepageTransition, workpageTransitionOut } from '@/app/(site)/animations'
 import styles from './Logo.module.scss'
 
 interface Props {

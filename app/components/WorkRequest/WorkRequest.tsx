@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { homepageTransitionOut } from '@/app/animations'
+import { homepageTransitionOut } from '@/app/(site)/animations'
 import { useWorkAccess } from '@/app/context/WorkAccessContext'
 import styles from './WorkRequest.module.scss'
 

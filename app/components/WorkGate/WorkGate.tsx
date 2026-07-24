@@ -4,10 +4,10 @@ import { useState, useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { toPlainText } from '@portabletext/toolkit'
 import type { PortableTextBlock } from '@portabletext/types'
-import { validateWorkPassword } from '@/app/work/actions'
+import { validateWorkPassword } from '@/app/(site)/work/actions'
 import { useWorkAccess } from '@/app/context/WorkAccessContext'
 import styles from './WorkGate.module.scss'
-import { homepageTransitionOut } from '@/app/animations'
+import { homepageTransitionOut } from '@/app/(site)/animations'
 
 interface Props {
   mail?: string

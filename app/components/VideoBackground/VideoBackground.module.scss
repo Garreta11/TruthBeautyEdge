@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   z-index: -1;
-  overflow: hidden;
+  /* overflow: hidden; */
   // Scopes mix-blend-mode below to just this group, so .infoImage blends with .video
   isolation: isolate;
   // Purely decorative — never intercepts clicks meant for content above or below it

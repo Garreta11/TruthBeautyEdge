@@ -1,29 +1,45 @@
 'use client'
 
-import { useEffect } from 'react'
-import { usePathname } from 'next/navigation'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react'
 import Lenis from 'lenis'
+import 'lenis/dist/lenis.css'
 
-export default function LenisProvider({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
+const LenisContext = createContext<Lenis | null>(null)
+
+export function useLenis() {
+  return useContext(LenisContext)
+}
+
+interface Props {
+  children: ReactNode
+}
+
+export default function LenisProvider({ children }: Props) {
+  const [lenis, setLenis] = useState<Lenis | null>(null)
 
   useEffect(() => {
-    if (pathname.startsWith('/studio')) return
 
-    const lenis = new Lenis()
+    const instance = new Lenis({
+      autoRaf: true,
+    })
 
-    function raf(time: number) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
-    }
-
-    const id = requestAnimationFrame(raf)
+    setLenis(instance)
 
     return () => {
-      cancelAnimationFrame(id)
-      lenis.destroy()
+      instance.destroy()
+      setLenis(null)
     }
-  }, [pathname])
+  }, [])
 
-  return <>{children}</>
+  return (
+    <LenisContext.Provider value={lenis}>
+      {children}
+    </LenisContext.Provider>
+  )
 }
