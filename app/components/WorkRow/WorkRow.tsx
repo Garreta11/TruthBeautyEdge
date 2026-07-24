@@ -86,6 +86,10 @@ function MediaCell({ item }: { item: MediaItem }) {
 export type HorizontalScrollState = {
   target: number
   current: number
+  // Width of one (non-duplicated) copy of the media strip, in px. Measured
+  // via ResizeObserver instead of read every animation frame, since reading
+  // scrollWidth forces the browser to recompute layout.
+  width: number
   tracks: Set<HTMLDivElement>
 }
 export type HorizontalScrollStates = Map<string, HorizontalScrollState>
@@ -115,12 +119,17 @@ export default function WorkRow({ project, horizontalStates }: Props) {
 
     let existingState = horizontalStates.get(project._id)
     if (!existingState) {
-      existingState = { target: 0, current: 0, tracks: new Set() }
+      existingState = { target: 0, current: 0, width: 0, tracks: new Set() }
       horizontalStates.set(project._id, existingState)
     }
     const state = existingState
 
     state.tracks.add(track)
+
+    const resizeObserver = new ResizeObserver(() => {
+      state.width = track.scrollWidth / 3
+    })
+    resizeObserver.observe(track)
 
     function onWheel(e: WheelEvent) {
       if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return
@@ -168,6 +177,7 @@ export default function WorkRow({ project, horizontalStates }: Props) {
     strip.addEventListener('touchcancel', onTouchEnd, { passive: true })
 
     return () => {
+      resizeObserver.disconnect()
       state.tracks.delete(track)
       strip.removeEventListener('wheel', onWheel)
       strip.removeEventListener('touchstart', onTouchStart)

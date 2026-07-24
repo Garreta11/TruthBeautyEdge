@@ -32,14 +32,13 @@ export default function WorkScroll({ projects }: Props) {
   // state object, so they stay in sync for free.
   useLenisRaf(() => {
     horizontalStates.forEach((state) => {
-      state.current += (state.target - state.current) * HORIZONTAL_LERP
-      if (state.tracks.size === 0) return
+      const delta = state.target - state.current
+      if (Math.abs(delta) < 0.01) return // at rest — nothing to animate
 
-      const [firstTrack] = state.tracks
-      const oneCopyWidth = firstTrack.scrollWidth / 3
-      if (oneCopyWidth <= 0) return
+      state.current += delta * HORIZONTAL_LERP
+      if (state.tracks.size === 0 || state.width <= 0) return
 
-      const offset = modulo(state.current, oneCopyWidth)
+      const offset = modulo(state.current, state.width)
       state.tracks.forEach((track) => {
         track.style.transform = `translate3d(${-offset}px, 0, 0)`
       })
