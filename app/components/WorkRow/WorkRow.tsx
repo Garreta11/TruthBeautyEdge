@@ -86,6 +86,12 @@ function MediaCell({ item }: { item: MediaItem }) {
 export type HorizontalScrollState = {
   target: number
   current: number
+  // Per-frame velocity, in px. While isDragging is true, target is driven
+  // directly by the gesture; once it ends, WorkScroll's rAF loop keeps
+  // advancing target by velocity (decaying it each frame) for a momentum
+  // coast instead of stopping dead.
+  velocity: number
+  isDragging: boolean
   // Width of one (non-duplicated) copy of the media strip, in px. Measured
   // via ResizeObserver instead of read every animation frame, since reading
   // scrollWidth forces the browser to recompute layout.
@@ -119,7 +125,7 @@ export default function WorkRow({ project, horizontalStates }: Props) {
 
     let existingState = horizontalStates.get(project._id)
     if (!existingState) {
-      existingState = { target: 0, current: 0, width: 0, tracks: new Set() }
+      existingState = { target: 0, current: 0, velocity: 0, isDragging: false, width: 0, tracks: new Set() }
       horizontalStates.set(project._id, existingState)
     }
     const state = existingState
@@ -131,10 +137,19 @@ export default function WorkRow({ project, horizontalStates }: Props) {
     })
     resizeObserver.observe(track)
 
+    let wheelIdleTimeout: ReturnType<typeof setTimeout> | null = null
+
     function onWheel(e: WheelEvent) {
       if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return
       e.preventDefault()
       state.target += e.deltaX
+      state.velocity = e.deltaX
+      state.isDragging = true
+
+      if (wheelIdleTimeout) clearTimeout(wheelIdleTimeout)
+      wheelIdleTimeout = setTimeout(() => {
+        state.isDragging = false
+      }, 150)
     }
 
     let axisLock: 'x' | 'y' | null = null
@@ -156,18 +171,23 @@ export default function WorkRow({ project, horizontalStates }: Props) {
       if (axisLock === null) {
         if (Math.abs(dx) < TOUCH_AXIS_THRESHOLD && Math.abs(dy) < TOUCH_AXIS_THRESHOLD) return
         axisLock = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
+        if (axisLock === 'x') state.isDragging = true
       }
 
       if (axisLock !== 'x') return
 
       e.preventDefault()
       state.target -= dx
+      // Light smoothing so the final, possibly tiny, sample before release
+      // doesn't dominate the coast velocity.
+      state.velocity = state.velocity * 0.7 - dx * 0.3
       lastX = touch.clientX
       lastY = touch.clientY
     }
 
     function onTouchEnd() {
       axisLock = null
+      state.isDragging = false
     }
 
     strip.addEventListener('wheel', onWheel, { passive: false })
@@ -177,6 +197,7 @@ export default function WorkRow({ project, horizontalStates }: Props) {
     strip.addEventListener('touchcancel', onTouchEnd, { passive: true })
 
     return () => {
+      if (wheelIdleTimeout) clearTimeout(wheelIdleTimeout)
       resizeObserver.disconnect()
       state.tracks.delete(track)
       strip.removeEventListener('wheel', onWheel)

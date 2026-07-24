@@ -12,7 +12,9 @@ interface Props {
   projects: OldProject[]
 }
 
-const HORIZONTAL_LERP = 0.1
+const HORIZONTAL_LERP = 1
+const FRICTION = 0.94 // velocity multiplier applied per frame while coasting
+const VELOCITY_EPSILON = 0.02 // px/frame below which the coast is considered stopped
 
 function modulo(n: number, d: number) {
   return ((n % d) + d) % d
@@ -32,8 +34,21 @@ export default function WorkScroll({ projects }: Props) {
   // state object, so they stay in sync for free.
   useLenisRaf(() => {
     horizontalStates.forEach((state) => {
+      // Once the gesture ends, keep advancing target with decaying velocity
+      // instead of stopping dead — a momentum coast, same idea as native
+      // touch scrolling.
+      if (!state.isDragging) {
+        if (Math.abs(state.velocity) > VELOCITY_EPSILON) {
+          state.target += state.velocity
+          state.velocity *= FRICTION
+        } else {
+          state.velocity = 0
+        }
+      }
+
       const delta = state.target - state.current
-      if (Math.abs(delta) < 0.01) return // at rest — nothing to animate
+      const atRest = Math.abs(delta) < 0.01 && state.velocity === 0 && !state.isDragging
+      if (atRest) return
 
       state.current += delta * HORIZONTAL_LERP
       if (state.tracks.size === 0 || state.width <= 0) return
