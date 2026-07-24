@@ -1,4 +1,4 @@
-'use client'
+/* 'use client'
 
 import type { OldProject } from '@/sanity/lib/types'
 import WorkRow from '@/app/components/WorkRow/WorkRow'
@@ -15,6 +15,33 @@ export default function WorkScroll({ projects }: Props) {
         projects.map((project) => (
           <WorkRow key={`${project._id}-${copy}`} project={project} />
         ))
+      )}
+    </div>
+  )
+}
+ */
+
+'use client'
+
+import type { OldProject } from '@/sanity/lib/types'
+import WorkRow from '@/app/components/WorkRow/WorkRow'
+import styles from './WorkScroll.module.scss'
+
+interface Props {
+  projects: OldProject[]
+}
+
+export default function WorkScroll({ projects }: Props) {
+  return (
+    <div className={styles.scroll}>
+      {projects.map((project) => (
+        <WorkRow key={`${project._id}`} project={project} />
+      ))}
+      {projects.length > 0 && (
+        <WorkRow key={`${projects[0]._id}-duplicate`} project={projects[0]} />
+      )}
+      {projects.length > 0 && (
+        <WorkRow key={`${projects[1]._id}-duplicate`} project={projects[1]} />
       )}
     </div>
   )
