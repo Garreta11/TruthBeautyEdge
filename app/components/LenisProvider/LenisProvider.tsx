@@ -14,7 +14,7 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
     const isWorkpage = pathname === "/work";
 
     const lenis = new Lenis({
-      lerp: 0.08,
+      /* lerp: 0.08, */
       wheelMultiplier: 1,
       smoothWheel: true,
       infinite: isWorkpage,
