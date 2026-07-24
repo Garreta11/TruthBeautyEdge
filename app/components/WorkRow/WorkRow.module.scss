@@ -79,6 +79,14 @@ $gap: 10px;
   }
 }
 
+// Stand-in for a file video before it's near the viewport (see WorkRow's
+// IntersectionObserver) — no real aspect ratio is known yet since that only
+// comes from the video's own metadata, so this is a best-effort guess.
+.mediaPlaceholder {
+  height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
 .cellEmbed {
   aspect-ratio: 16 / 9;
 

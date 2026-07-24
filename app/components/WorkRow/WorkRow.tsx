@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { OldProject, MediaItem } from '@/sanity/lib/types'
 import { urlFor } from '@/sanity/lib/image'
@@ -29,7 +29,10 @@ const components: PortableTextComponents = {
   },
 }
 
-function MediaCell({ item }: { item: MediaItem }) {
+// Video and iframe embeds are real network requests and browsing contexts —
+// only mount them once the row is near the viewport (see WorkRow's
+// IntersectionObserver); everything else stays a lightweight placeholder.
+function MediaCell({ item, active }: { item: MediaItem; active: boolean }) {
   if (item._type === 'mediaImage') {
     // Rows display at up to ~100dvh/2 tall — request roughly that size (at 2x
     // for retina) instead of the original upload, and let Sanity serve
@@ -50,7 +53,7 @@ function MediaCell({ item }: { item: MediaItem }) {
     if (fileSrc) {
       return (
         <div className={styles.cell}>
-          <VideoPlayer src={fileSrc} />
+          {active ? <VideoPlayer src={fileSrc} /> : <div className={styles.mediaPlaceholder} />}
         </div>
       )
     }
@@ -58,7 +61,7 @@ function MediaCell({ item }: { item: MediaItem }) {
     if (externalSrc) {
       return (
         <div className={`${styles.cell} ${styles.cellEmbed}`}>
-          <iframe src={externalSrc} allowFullScreen title={item.caption ?? 'video'} />
+          {active && <iframe src={externalSrc} allowFullScreen title={item.caption ?? 'video'} />}
         </div>
       )
     }
@@ -110,9 +113,26 @@ interface Props {
 const TOUCH_AXIS_THRESHOLD = 4
 
 export default function WorkRow({ project, horizontalStates }: Props) {
+  const rowRef = useRef<HTMLDivElement>(null)
   const stripRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const { openPanel } = usePanel()
+  const [isNearViewport, setIsNearViewport] = useState(false)
+
+  // Only mount real video/iframe media once the row is within (or close to)
+  // the viewport — see MediaCell. rootMargin preloads slightly ahead so
+  // media isn't visibly popping in mid-scroll.
+  useEffect(() => {
+    const row = rowRef.current
+    if (!row) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsNearViewport(entry.isIntersecting),
+      { rootMargin: '50% 0px' }
+    )
+    observer.observe(row)
+    return () => observer.disconnect()
+  }, [])
 
   // Register this row's track into the shared state (rendered by
   // WorkScroll's single rAF loop) and wire up axis-dominant gesture capture:
@@ -211,6 +231,7 @@ export default function WorkRow({ project, horizontalStates }: Props) {
   return (
     <div
       data-work-row
+      ref={rowRef}
       className={`${styles.row} ${openPanel ? styles.locked : ''}`}
       onMouseEnter={(e) => pauseVideoOutside(e.currentTarget)}
     >
@@ -218,7 +239,7 @@ export default function WorkRow({ project, horizontalStates }: Props) {
         <div className={styles.track} ref={trackRef}>
           {[0, 1, 2].map((copy) =>
             project.media?.map((item) => (
-              <MediaCell key={`${item._key}-${copy}`} item={item} />
+              <MediaCell key={`${item._key}-${copy}`} item={item} active={isNearViewport} />
             ))
           )}
         </div>
