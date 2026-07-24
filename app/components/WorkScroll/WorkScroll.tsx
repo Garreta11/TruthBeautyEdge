@@ -4,6 +4,7 @@ import { useRef, useEffect } from 'react'
 import type { OldProject } from '@/sanity/lib/types'
 import WorkRow, { type StripGroups } from '@/app/components/WorkRow/WorkRow'
 import { pauseVideoOutside } from '@/app/components/VideoPlayer/VideoPlayer'
+import { workpageTransition } from '@/app/(site)/animations'
 import styles from './WorkScroll.module.scss'
 
 interface Props {
@@ -13,6 +14,10 @@ interface Props {
 export default function WorkScroll({ projects }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const stripGroups = useRef<StripGroups>(new Map()).current
+
+  useEffect(() => {
+    workpageTransition()
+  }, [])
 
   useEffect(() => {
     let rafId: number | null = null
