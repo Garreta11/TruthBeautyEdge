@@ -48,7 +48,22 @@ export default function WorkScroll({ projects }: Props) {
 
       const delta = state.target - state.current
       const atRest = Math.abs(delta) < 0.01 && state.velocity === 0 && !state.isDragging
-      if (atRest) return
+
+      // will-change promotes a track to its own GPU compositor layer — worth
+      // it while a row is actually animating, wasteful (and a likely source
+      // of intermittent jank) if left on every row's track permanently, since
+      // every project on the page gets its own layer whether it's moving or
+      // not. Toggle it with the same at-rest signal instead.
+      if (atRest) {
+        state.tracks.forEach((track) => {
+          if (track.style.willChange !== 'auto') track.style.willChange = 'auto'
+        })
+        return
+      }
+
+      state.tracks.forEach((track) => {
+        if (track.style.willChange !== 'transform') track.style.willChange = 'transform'
+      })
 
       state.current += delta * HORIZONTAL_LERP
       if (state.tracks.size === 0 || state.width <= 0) return

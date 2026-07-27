@@ -162,6 +162,10 @@ export default function WorkRow({ project, horizontalStates }: Props) {
     function onWheel(e: WheelEvent) {
       if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return
       e.preventDefault()
+      // Lenis listens on window in the bubble phase too — without this, it
+      // still sees deltaY from this same event and scrolls the page
+      // vertically while the row is being dragged horizontally.
+      e.stopPropagation()
       state.target += e.deltaX
       state.velocity = e.deltaX
       state.isDragging = true
@@ -183,20 +187,40 @@ export default function WorkRow({ project, horizontalStates }: Props) {
       axisLock = null
     }
 
-    function onTouchMove(e: TouchEvent) {
+    // Passive — never calls preventDefault, so it can't block native
+    // scrolling. Only used to spot the moment a gesture commits to the
+    // horizontal axis; vertical gestures just fall through untouched, which
+    // is what keeps them running smoothly on the compositor thread instead
+    // of stalling on this JS on every tick.
+    function onTouchMoveDetect(e: TouchEvent) {
+      if (axisLock !== null) return
+
       const touch = e.touches[0]
       const dx = touch.clientX - lastX
       const dy = touch.clientY - lastY
+      if (Math.abs(dx) < TOUCH_AXIS_THRESHOLD && Math.abs(dy) < TOUCH_AXIS_THRESHOLD) return
 
-      if (axisLock === null) {
-        if (Math.abs(dx) < TOUCH_AXIS_THRESHOLD && Math.abs(dy) < TOUCH_AXIS_THRESHOLD) return
-        axisLock = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
-        if (axisLock === 'x') state.isDragging = true
-      }
-
+      axisLock = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
       if (axisLock !== 'x') return
 
+      state.isDragging = true
+      lastX = touch.clientX
+      lastY = touch.clientY
+      // Only now — once we know this gesture actually is a horizontal
+      // drag — add the non-passive listener that can preventDefault/
+      // stopPropagation for the rest of it.
+      strip!.addEventListener('touchmove', onTouchMoveActive, { passive: false })
+    }
+
+    function onTouchMoveActive(e: TouchEvent) {
+      const touch = e.touches[0]
+      const dx = touch.clientX - lastX
+
       e.preventDefault()
+      // Same reason as onWheel: stop this touchmove from reaching Lenis's
+      // own window-level listener so it can't scroll the page while this
+      // row is being dragged.
+      e.stopPropagation()
       state.target -= dx
       // Light smoothing so the final, possibly tiny, sample before release
       // doesn't dominate the coast velocity.
@@ -205,14 +229,21 @@ export default function WorkRow({ project, horizontalStates }: Props) {
       lastY = touch.clientY
     }
 
-    function onTouchEnd() {
+    function onTouchEnd(e: TouchEvent) {
+      // If Lenis picked up any vertical delta during the ambiguous first few
+      // pixels before the axis locked horizontal, stop it here too so it
+      // can't turn that into a release-momentum flick of the page.
+      if (axisLock === 'x') {
+        e.stopPropagation()
+        strip!.removeEventListener('touchmove', onTouchMoveActive)
+      }
       axisLock = null
       state.isDragging = false
     }
 
     strip.addEventListener('wheel', onWheel, { passive: false })
     strip.addEventListener('touchstart', onTouchStart, { passive: true })
-    strip.addEventListener('touchmove', onTouchMove, { passive: false })
+    strip.addEventListener('touchmove', onTouchMoveDetect, { passive: true })
     strip.addEventListener('touchend', onTouchEnd, { passive: true })
     strip.addEventListener('touchcancel', onTouchEnd, { passive: true })
 
@@ -222,7 +253,8 @@ export default function WorkRow({ project, horizontalStates }: Props) {
       state.tracks.delete(track)
       strip.removeEventListener('wheel', onWheel)
       strip.removeEventListener('touchstart', onTouchStart)
-      strip.removeEventListener('touchmove', onTouchMove)
+      strip.removeEventListener('touchmove', onTouchMoveDetect)
+      strip.removeEventListener('touchmove', onTouchMoveActive)
       strip.removeEventListener('touchend', onTouchEnd)
       strip.removeEventListener('touchcancel', onTouchEnd)
     }

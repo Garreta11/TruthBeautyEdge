@@ -63,7 +63,8 @@ $gap: 10px;
   padding-inline: var(--margin);
   height: 100%;
   width: max-content;
-  will-change: transform;
+  // will-change is toggled from WorkScroll's rAF loop instead of set here —
+  // only tracks that are actually animating should get a compositor layer.
 }
 
 .cell {
