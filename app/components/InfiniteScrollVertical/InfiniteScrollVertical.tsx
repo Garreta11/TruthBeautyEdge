@@ -11,9 +11,20 @@ interface Props {
   friction?: number
 }
 
-const InfiniteScrollVertical = ({ projects, friction = 0.99 }: Props) => {
+const InfiniteScrollVertical = ({ projects, friction }: Props) => {
   const trackRef = useRef<HTMLDivElement>(null)
   const duplicatedProjects = [...projects, ...projects]
+
+  // Detectamos fricción óptima si no viene una por props
+  const [effectiveFriction, setEffectiveFriction] = useState(() => {
+    if (friction !== undefined) return friction
+    // Si estamos en browser y detectamos táctil/móvil
+    if (typeof window !== 'undefined') {
+      const isTouch = window.matchMedia('(pointer: coarse)').matches
+      return isTouch ? 0.96 : 0.90
+    }
+    return 0.90 // Fallback
+  })
 
   const yPos = useRef(0)
   const velocity = useRef(0)
@@ -25,6 +36,21 @@ const InfiniteScrollVertical = ({ projects, friction = 0.99 }: Props) => {
   useEffect(() => {
     workpageTransition()
   }, [])
+
+  useEffect(() => {
+    // Escucha cambios de pantalla o tipo de puntero
+    const mediaQuery = window.matchMedia('(pointer: coarse)')
+    const updateFriction = (e: MediaQueryListEvent | MediaQueryList) => {
+      if (friction === undefined) {
+        setEffectiveFriction(e.matches ? 0.96 : 0.9)
+      }
+    }
+
+    updateFriction(mediaQuery)
+    mediaQuery.addEventListener('change', updateFriction)
+
+    return () => mediaQuery.removeEventListener('change', updateFriction)
+  }, [friction])
 
   // Which row is "centered" (drives the brightness toggle in
   // InfiniteScrollVertical.module.scss) is detected via IntersectionObserver
@@ -87,11 +113,12 @@ const InfiniteScrollVertical = ({ projects, friction = 0.99 }: Props) => {
     if (!track) return
 
     let animationFrameId: number
+    console.log("effectiveFriction", effectiveFriction)
 
     const updatePhysics = () => {
       if (!isDragging.current) {
         yPos.current += velocity.current
-        velocity.current *= friction
+        velocity.current *= effectiveFriction
 
         if (Math.abs(velocity.current) < 0.01) {
           velocity.current = 0
@@ -126,7 +153,7 @@ const InfiniteScrollVertical = ({ projects, friction = 0.99 }: Props) => {
       track.removeEventListener('wheel', handleWheel)
       cancelAnimationFrame(animationFrameId)
     }
-  }, [friction])
+  }, [effectiveFriction])
 
   const handlePointerDown = (e: React.PointerEvent) => {
     isDragging.current = true
