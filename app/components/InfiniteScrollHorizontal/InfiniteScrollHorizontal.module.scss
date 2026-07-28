@@ -1,0 +1,45 @@
+/* InfiniteScrollHorizontal.module.scss */
+
+.horizontalContainer {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  cursor: grab;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+}
+
+.horizontalContainer.isGrabbing {
+  cursor: grabbing;
+}
+
+.horizontalTrack {
+  display: flex;
+  flex-direction: row;
+  /* Eliminamos el gap para que no haya espacio entre elementos */
+  gap: 8px;
+  will-change: transform;
+  align-items: center;
+  height: 100%;
+  /* Eliminamos el padding para aprovechar todo el contenedor */
+  padding: 0; 
+}
+
+.imageBlock {
+  /* Ocupa el 100% del alto del contenedor horizontal */
+  height: 100%; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  flex-shrink: 0; /* Mantiene el ancho estricto del elemento */
+  
+  /* Eliminamos estilos de tarjeta previa */
+  border-radius: 0;
+  box-shadow: none;
+}

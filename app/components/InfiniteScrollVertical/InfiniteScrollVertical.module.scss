@@ -6,9 +6,8 @@
   position: relative;
   user-select: none;
   cursor: grab;
-
-  /* Obliga al móvil a ceder el control del touch al script */
   touch-action: none;
+  background-color: #111;
 }
 
 .scrollContainer.isGrabbing {
@@ -18,16 +17,23 @@
 .scrollTrack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   will-change: transform;
 }
 
 .projectRow {
   height: 50dvh;
-  background-color: red;
+  background-color: #1a1a1a;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 30px;
+  flex-direction: column;
   flex-shrink: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.projectHeader {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 5px;
 }
