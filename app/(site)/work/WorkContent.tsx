@@ -23,8 +23,8 @@ export default function WorkContent({ projects }: Props) {
   return (
     <>
       <WorkOverlay />
-      <WorkScroll projects={projects} />
-      {/* <InfiniteScrollVertical projects={projects} /> */}
+      {/* <WorkScroll projects={projects} /> */}
+      <InfiniteScrollVertical projects={projects} />
     </>
   )
 }
