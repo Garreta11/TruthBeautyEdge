@@ -11,7 +11,7 @@ interface Props {
   friction?: number
 }
 
-const InfiniteScrollVertical = ({ projects, friction = 0.3 }: Props) => {
+const InfiniteScrollVertical = ({ projects, friction = 0.99 }: Props) => {
   const trackRef = useRef<HTMLDivElement>(null)
   const duplicatedProjects = [...projects, ...projects]
 
