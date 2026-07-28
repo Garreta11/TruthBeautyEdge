@@ -1,5 +1,27 @@
-.scroll {
+/* InfiniteScrollVertical.module.scss */
+
+.scrollContainer {
+  overflow: hidden;
+  height: 100vh;
+  position: relative;
+  /* Evita seleccionar texto accidentalmente al hacer scroll agresivo */
+  user-select: none; 
+}
+
+.scrollTrack {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  /* GPU Acceleration para animación ultra fluida */
+  will-change: transform; 
+}
+
+.projectRow {
+  height: 50dvh;
+  background-color: red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  flex-shrink: 0;
 }
