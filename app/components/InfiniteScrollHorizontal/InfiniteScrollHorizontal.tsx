@@ -1,40 +1,112 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { PortableText, PortableTextComponents } from '@portabletext/react'
+import type { MediaItem } from '@/sanity/lib/types'
+import { urlFor } from '@/sanity/lib/image'
+import VideoPlayer, { pauseVideoOutside } from '@/app/components/VideoPlayer/VideoPlayer'
 import styles from './InfiniteScrollHorizontal.module.scss'
 
 interface Props {
   projectId: string // _id único del proyecto para sincronizar copias
-  projectIndex: number
-  itemCount?: number
+  media: MediaItem[]
   friction?: number
 }
 
-const getColor = (index: number) => {
-  const hue = (index * 137.5) % 360
-  return `hsl(${hue}, 65%, 55%)`
+const components: PortableTextComponents = {
+  block: {
+    h1: ({ children }) => <h1>{children}</h1>,
+    h2: ({ children }) => <h2>{children}</h2>,
+    h3: ({ children }) => <h3>{children}</h3>,
+    h4: ({ children }) => <h4>{children}</h4>,
+    normal: ({ children }) => <p>{children}</p>,
+    blockquote: ({ children }) => <blockquote>{children}</blockquote>,
+  },
+  marks: {
+    link: ({ children, value }) => (
+      <a href={value?.href} target="_blank" rel="noopener noreferrer">
+        {children}
+      </a>
+    ),
+  },
 }
 
-const widths = ['250px', '450px', '300px', '500px', '200px', '380px']
+// Same media dispatch as WorkRow's MediaCell (image/video/text), sized to
+// fill the strip's height instead of a fixed row height.
+function MediaCell({ item, active }: { item: MediaItem; active: boolean }) {
+  if (item._type === 'mediaImage') {
+    const src = urlFor(item.image).height(1200).auto('format').quality(75).url()
+    return (
+      <div className={styles.imageBlock}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={item.alt ?? ''} loading="lazy" />
+      </div>
+    )
+  }
+
+  if (item._type === 'mediaVideo') {
+    const fileSrc = item.file?.asset?.url
+    const externalSrc = item.url
+
+    if (fileSrc) {
+      return (
+        <div className={styles.imageBlock}>
+          {active ? <VideoPlayer src={fileSrc} /> : <div className={styles.mediaPlaceholder} />}
+        </div>
+      )
+    }
+
+    if (externalSrc) {
+      return (
+        <div className={`${styles.imageBlock} ${styles.imageBlockEmbed}`}>
+          {active && <iframe src={externalSrc} allowFullScreen title={item.caption ?? 'video'} />}
+        </div>
+      )
+    }
+
+    return null
+  }
+
+  if (item._type === 'mediaText') {
+    return (
+      <div className={`${styles.imageBlock} ${styles.imageBlockText}`}>
+        <div className={styles.textContainer}>
+          <PortableText value={item.body as Parameters<typeof PortableText>[0]['value']} components={components} />
+        </div>
+      </div>
+    )
+  }
+
+  return null
+}
 
 // Registro en memoria compartido para sincronizar la X de proyectos duplicados
 const sharedPositions = new Map<string, number>()
 
 const InfiniteScrollHorizontal = ({
   projectId,
-  projectIndex,
-  itemCount = 8,
+  media,
   friction = 0.93,
 }: Props) => {
   const trackRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [isNearViewport, setIsNearViewport] = useState(false)
 
-  const items = Array.from({ length: itemCount }, (_, i) => ({
-    id: i,
-    color: getColor(projectIndex * 10 + i),
-    width: widths[i % widths.length],
-  }))
+  const duplicatedItems = [...media, ...media]
 
-  const duplicatedItems = [...items, ...items]
+  // Only mount real video/iframe media once the strip is near the viewport —
+  // same idea as WorkRow's IntersectionObserver.
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsNearViewport(entry.isIntersecting),
+      { rootMargin: '50% 0px' }
+    )
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [])
 
   // Inicializamos la posición recuperando el valor compartido (si existe)
   const xPos = useRef(sharedPositions.get(projectId) || 0)
@@ -177,24 +249,17 @@ const InfiniteScrollHorizontal = ({
 
   return (
     <div
+      ref={containerRef}
       className={`${styles.horizontalContainer} ${isGrabbing ? styles.isGrabbing : ''}`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
+      onMouseEnter={(e) => pauseVideoOutside(e.currentTarget)}
     >
       <div ref={trackRef} className={styles.horizontalTrack}>
         {duplicatedItems.map((item, index) => (
-          <div
-            key={`${item.id}-${index}`}
-            className={styles.imageBlock}
-            style={{
-              backgroundColor: item.color,
-              width: item.width,
-            }}
-          >
-            <span>{`Img ${item.id + 1}`}</span>
-          </div>
+          <MediaCell key={`${item._key}-${index}`} item={item} active={isNearViewport} />
         ))}
       </div>
     </div>

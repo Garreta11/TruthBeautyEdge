@@ -107,17 +107,14 @@ const InfiniteScrollVertical = ({ projects, friction = 0.93 }: Props) => {
       onPointerCancel={handlePointerUp}
     >
       <div ref={trackRef} className={styles.scrollTrack}>
-        {duplicatedProjects.map((project, index) => {
-          const originalIndex = index % projects.length
-          return (
-            <div key={`${project._id}-${index}`} className={styles.projectRow}>
-              <InfiniteScrollHorizontal 
-                projectId={project._id} // ID único que conecta las dos instancias del proyecto
-                projectIndex={originalIndex} 
-              />
-            </div>
-          )
-        })}
+        {duplicatedProjects.map((project, index) => (
+          <div key={`${project._id}-${index}`} className={styles.projectRow}>
+            <InfiniteScrollHorizontal
+              projectId={project._id} // ID único que conecta las dos instancias del proyecto
+              media={project.media}
+            />
+          </div>
+        ))}
       </div>
     </div>
   )
