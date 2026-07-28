@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { gsap } from 'gsap'
 import { Flip } from 'gsap/Flip'
 import styles from './VideoPlayer.module.scss'
@@ -36,8 +37,15 @@ function formatTime(seconds: number) {
 }
 
 export default function VideoPlayer({ src }: Props) {
+  // Where the player renders when collapsed, in its normal spot in the
+  // scrolling strip — display: contents (see the .anchor rule) so it's
+  // invisible to layout and doesn't affect the strip's sizing.
+  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
+  // A callback-ref-backed state (like anchorEl above) instead of a plain
+  // ref: the listener effect below needs to re-run whenever the actual
+  // <video> node changes, and a plain ref wouldn't notify it of that.
+  const [videoEl, setVideoEl] = useState<HTMLVideoElement | null>(null)
   const cursorRef = useRef<HTMLDivElement>(null)
   const [muted, setMuted] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
@@ -49,7 +57,7 @@ export default function VideoPlayer({ src }: Props) {
   const flipStateRef = useRef<Flip.FlipState | null>(null)
 
   useEffect(() => {
-    const video = videoRef.current
+    const video = videoEl
     if (!video) return
 
     function handleTimeUpdate() {
@@ -88,10 +96,14 @@ export default function VideoPlayer({ src }: Props) {
       video.removeEventListener('play', handlePlay)
       video.removeEventListener('pause', handlePause)
     }
-  }, [])
+    // Depends on the actual <video> node (via the videoEl callback ref)
+    // rather than running once on mount — the node is portaled between
+    // containers on expand/collapse, and this must reattach to whichever
+    // node is actually live instead of assuming it never changes.
+  }, [videoEl])
 
   function handleSeek(e: React.ChangeEvent<HTMLInputElement>) {
-    const video = videoRef.current
+    const video = videoEl
     if (!video) return
     const time = Number(e.target.value)
     video.currentTime = time
@@ -129,7 +141,7 @@ export default function VideoPlayer({ src }: Props) {
   }, [expanded])
 
   function togglePlay() {
-    const video = videoRef.current
+    const video = videoEl
     if (!video) return
     if (video.paused) {
       video.play().catch(() => {})
@@ -146,7 +158,7 @@ export default function VideoPlayer({ src }: Props) {
     cursor.style.top = `${e.clientY - rect.top}px`
   }
 
-  return (
+  const player = (
     <>
       {expanded && <div className={styles.overlay} onClick={toggleExpand} />}
       <div
@@ -158,7 +170,7 @@ export default function VideoPlayer({ src }: Props) {
         onMouseLeave={() => setHovering(false)}
         onMouseMove={handleMouseMove}
       >
-        <video ref={videoRef} src={src} autoPlay={false} loop muted={muted} playsInline preload="metadata" />
+        <video ref={setVideoEl} src={src} autoPlay={false} loop muted={muted} playsInline preload="metadata" />
 
       <div ref={cursorRef} className={`${styles.playCursor} ${hovering && !overControls ? styles.visible : ''}`}>
         {isPlaying ? (
@@ -214,6 +226,24 @@ export default function VideoPlayer({ src }: Props) {
         </button>
       </div>
       </div>
+    </>
+  )
+
+  // Always portal — toggling between an inline render and a portal (rather
+  // than always portaling and only changing the container) would make React
+  // remount the subtree on expand/collapse, tearing down the <video> and
+  // losing playback position. Moving the *same* portal to a new container
+  // relocates the DOM node instead, so the video keeps playing untouched
+  // while its containing block becomes document.body — escaping any
+  // transformed/will-change ancestor in the scrolling strips above it,
+  // which is what made `position: fixed` stay pinned to the strip instead
+  // of the viewport.
+  const portalTarget = expanded && typeof document !== 'undefined' ? document.body : anchorEl
+
+  return (
+    <>
+      <div ref={setAnchorEl} className={styles.anchor} />
+      {portalTarget && createPortal(player, portalTarget)}
     </>
   )
 }

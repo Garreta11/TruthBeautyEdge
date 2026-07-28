@@ -34,17 +34,6 @@ $gap: 10px;
       filter: brightness(0.2);
     }
   }
-
-  // `filter` establishes a new containing block, which would make a
-  // `position: fixed` expanded video position itself relative to this
-  // (scrolled) row instead of the viewport. Drop it while expanded —
-  // instantly (no transition), since Flip reads the layout synchronously
-  // right after this class is applied and a mid-transition filter value
-  // (anything other than the literal `none`) still counts as "set".
-  &:has([data-expanded='true']) {
-    filter: none !important;
-    transition: none !important;
-  }
 }
 
 .strip {

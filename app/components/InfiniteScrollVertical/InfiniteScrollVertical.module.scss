@@ -23,17 +23,40 @@
 
 .projectRow {
   height: 50dvh;
-  background-color: #1a1a1a;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   overflow: hidden;
   box-sizing: border-box;
+
+  opacity: 0;
+
+  filter: brightness(0.2);
+  transition: all ease 0.3s;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      filter: brightness(1);
+    }
+
+    &.locked:hover {
+      filter: brightness(0.2);
+    }
+  }
+
+  @media (max-width: 768px) {
+    &[data-centered='true'] {
+      filter: brightness(1);
+    }
+
+    &.locked[data-centered='true'] {
+      filter: brightness(0.2);
+    }
+  }
 }
 
 .projectHeader {
   color: #fff;
-  font-size: 20px;
   font-weight: 600;
   margin-bottom: 5px;
 }

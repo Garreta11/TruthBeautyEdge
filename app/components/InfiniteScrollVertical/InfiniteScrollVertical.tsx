@@ -4,13 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 import type { OldProject } from '@/sanity/lib/types'
 import InfiniteScrollHorizontal from '../InfiniteScrollHorizontal/InfiniteScrollHorizontal'
 import styles from './InfiniteScrollVertical.module.scss'
+import { workpageTransition } from '@/app/(site)/animations'
 
 interface Props {
   projects: OldProject[]
   friction?: number
 }
 
-const InfiniteScrollVertical = ({ projects, friction = 0.93 }: Props) => {
+const InfiniteScrollVertical = ({ projects, friction = 0.3 }: Props) => {
   const trackRef = useRef<HTMLDivElement>(null)
   const duplicatedProjects = [...projects, ...projects]
 
@@ -20,6 +21,66 @@ const InfiniteScrollVertical = ({ projects, friction = 0.93 }: Props) => {
   const isDragging = useRef(false)
   const lastY = useRef(0)
   const [isGrabbing, setIsGrabbing] = useState(false)
+
+  useEffect(() => {
+    workpageTransition()
+  }, [])
+
+  // Which row is "centered" (drives the brightness toggle in
+  // InfiniteScrollVertical.module.scss) is detected via IntersectionObserver
+  // instead of scanning every row's getBoundingClientRect on every rAF
+  // frame — rootMargin shrinks the observed viewport to a thin band at the
+  // vertical center, so a row only triggers the callback when it crosses
+  // that line, same approach as WorkScroll.
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+
+    const rows = track.querySelectorAll<HTMLElement>('[data-work-row]')
+    if (!rows.length) return
+
+    let currentCentered: HTMLElement | null = null
+    const intersecting = new Map<HTMLElement, DOMRectReadOnly>()
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const row = entry.target as HTMLElement
+          if (entry.isIntersecting) {
+            intersecting.set(row, entry.boundingClientRect)
+          } else {
+            intersecting.delete(row)
+          }
+        }
+
+        if (intersecting.size === 0) return
+
+        const viewportCenter = window.innerHeight / 2
+        let closest: HTMLElement | null = null
+        let closestDistance = Infinity
+
+        for (const [row, rect] of intersecting) {
+          const rowCenter = rect.top + rect.height / 2
+          const distance = Math.abs(rowCenter - viewportCenter)
+          if (distance < closestDistance) {
+            closestDistance = distance
+            closest = row
+          }
+        }
+
+        if (closest !== currentCentered) {
+          currentCentered?.setAttribute('data-centered', 'false')
+          closest?.setAttribute('data-centered', 'true')
+          currentCentered = closest
+        }
+      },
+      { rootMargin: '-49% 0px -49% 0px', threshold: 0 }
+    )
+
+    rows.forEach((row) => observer.observe(row))
+
+    return () => observer.disconnect()
+  }, [projects])
 
   useEffect(() => {
     const track = trackRef.current
@@ -108,7 +169,7 @@ const InfiniteScrollVertical = ({ projects, friction = 0.93 }: Props) => {
     >
       <div ref={trackRef} className={styles.scrollTrack}>
         {duplicatedProjects.map((project, index) => (
-          <div key={`${project._id}-${index}`} className={styles.projectRow}>
+          <div key={`${project._id}-${index}`} className={styles.projectRow} data-work-row>
             <InfiniteScrollHorizontal
               projectId={project._id} // ID único que conecta las dos instancias del proyecto
               media={project.media}
