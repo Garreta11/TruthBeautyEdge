@@ -4,16 +4,22 @@
   overflow: hidden;
   height: 100vh;
   position: relative;
-  /* Evita seleccionar texto accidentalmente al hacer scroll agresivo */
-  user-select: none; 
+  user-select: none;
+  cursor: grab;
+
+  /* Obliga al móvil a ceder el control del touch al script */
+  touch-action: none;
+}
+
+.scrollContainer.isGrabbing {
+  cursor: grabbing;
 }
 
 .scrollTrack {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  /* GPU Acceleration para animación ultra fluida */
-  will-change: transform; 
+  will-change: transform;
 }
 
 .projectRow {
