@@ -22,5 +22,9 @@ export default function WorkOverlay() {
     return () => window.removeEventListener('click', handleClick)
   }, [openPanel, setOpenPanel])
 
-  return <div className={`${styles.overlay} ${openPanel ? styles.visible : ''}`} />
+  const panelClass = openPanel === 'reachOut' ? styles.reachOut : openPanel === 'info' ? styles.info : ''
+
+  return (
+    <div className={`${styles.overlay} ${openPanel ? styles.visible : ''} ${panelClass}`} />
+  )
 }

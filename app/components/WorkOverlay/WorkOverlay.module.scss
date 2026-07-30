@@ -2,8 +2,6 @@
   position: fixed;
   inset: 0;
   z-index: 9;
-  /* background-color: rgba(0, 0, 0, .5); */
-  background-color: #ffffff26;
   pointer-events: none;
   transition: var(--transition);
   opacity: 0;
@@ -11,4 +9,14 @@
 
 .visible {
   opacity: 1;
+}
+
+.reachOut {
+  background-color: #00000000;
+  backdrop-filter: blur(50px);
+  opacity: 0;
+}
+
+.info {
+  background-color: #000000;
 }

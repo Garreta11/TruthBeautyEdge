@@ -26,9 +26,10 @@
   color: white;
   padding: 20px;
   padding-bottom: 80px;
-  backdrop-filter: blur(20px) !important;
+  backdrop-filter: blur(50px) !important;
   /* background: rgba(255, 255, 255, 0.05); */
-  background: #00000073;
+  /* background: #00000073; */
+  background: rgba(255, 255, 255, 0);
   border-radius: 22px;
 
   transform-origin: bottom right;
