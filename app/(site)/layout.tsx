@@ -7,6 +7,7 @@ import { WorkAccessProvider } from '@/app/context/WorkAccessContext'
 
 import Nav from '@/app/components/Nav/Nav'
 import VideoBackground from '@/app/components/VideoBackground/VideoBackground'
+import CustomCursor from '@/app/components/CustomCursor/CustomCursor'
 
 export default async function SiteLayout({
   children,
@@ -20,6 +21,8 @@ export default async function SiteLayout({
       <LenisProvider>
         <InteractionProvider>
           <PanelProvider>
+
+            <CustomCursor />
 
             {settings?.backgroundVideoUrl && (
               <VideoBackground

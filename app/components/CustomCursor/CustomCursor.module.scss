@@ -1,0 +1,21 @@
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  z-index: 10000;
+  opacity: 1;
+  pointer-events: none;
+  will-change: transform;
+  transition: opacity 0.3s ease;
+
+  background: #ffffff10;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  @media (pointer: coarse) {
+    display: none;
+  }
+}

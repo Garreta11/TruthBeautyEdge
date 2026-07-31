@@ -21,7 +21,7 @@ const InfiniteScrollVertical = ({ projects, friction }: Props) => {
     // Si estamos en browser y detectamos táctil/móvil
     if (typeof window !== 'undefined') {
       const isTouch = window.matchMedia('(pointer: coarse)').matches
-      return isTouch ? 0.96 : 0.90
+      return isTouch ? 0.8 : 0.6
     }
     return 0.90 // Fallback
   })
@@ -42,7 +42,7 @@ const InfiniteScrollVertical = ({ projects, friction }: Props) => {
     const mediaQuery = window.matchMedia('(pointer: coarse)')
     const updateFriction = (e: MediaQueryListEvent | MediaQueryList) => {
       if (friction === undefined) {
-        setEffectiveFriction(e.matches ? 0.96 : 0.9)
+        setEffectiveFriction(e.matches ? 0.8 : 0.6)
       }
     }
 
