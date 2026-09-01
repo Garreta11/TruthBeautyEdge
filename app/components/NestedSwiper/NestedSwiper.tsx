@@ -72,17 +72,6 @@ function MediaCell({ item }: { item: MediaItem; }) {
     return null
   }
 
-  if (item._type === 'mediaText') {
-    /* return (
-      <div className={`${styles.imageBlock} ${styles.imageBlockText}`}>
-        <div className={styles.textContainer}>
-          <PortableText value={item.body as Parameters<typeof PortableText>[0]['value']} components={components} />
-        </div>
-      </div>
-    ) */
-   return null
-  }
-
   return null
 }
 
@@ -90,26 +79,34 @@ const NestedSwiper = ({projects}: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const mousePos = useRef({ x: 0, y: 0 })
   const activeIndexRef = useRef<number | null>(null)
+  const isTouchRef = useRef(false)
   const { setActiveRow } = useActiveRow()
 
-  // The active row is whichever `.swiper-slide-v` the mouse is over, by
-  // position — not Swiper's own active-slide tracking. Re-run on every
-  // mousemove, and on every Swiper translate change (its "scroll") so the
-  // active row updates even if the row moves under a still mouse.
+  // On desktop, the active row is whichever `.swiper-slide-v` the mouse is
+  // over, by position — not Swiper's own active-slide tracking. On mobile
+  // (no hover) it's whichever row Swiper itself marks `swiper-slide-active`.
+  // Re-run on every mousemove, and on every Swiper translate change (its
+  // "scroll") so the active row updates even if it moves under a still mouse.
   const updateActiveRow = () => {
     const container = containerRef.current
     if (!container) return
 
     const rows = container.querySelectorAll<HTMLElement>(`.${styles['swiper-slide-v']}`)
-    const { x: mouseX, y: mouseY } = mousePos.current
     let activeRow: HTMLElement | null = null
 
-    rows.forEach((row) => {
-      const rect = row.getBoundingClientRect()
-      const isUnderMouse =
-        mouseX >= rect.left && mouseX <= rect.right && mouseY >= rect.top && mouseY <= rect.bottom
-      if (isUnderMouse) activeRow = row
-    })
+    if (isTouchRef.current) {
+      activeRow = container.querySelector<HTMLElement>(
+        `.${styles['swiper-slide-v']}.swiper-slide-active`
+      )
+    } else {
+      const { x: mouseX, y: mouseY } = mousePos.current
+      rows.forEach((row) => {
+        const rect = row.getBoundingClientRect()
+        const isUnderMouse =
+          mouseX >= rect.left && mouseX <= rect.right && mouseY >= rect.top && mouseY <= rect.bottom
+        if (isUnderMouse) activeRow = row
+      })
+    }
 
     rows.forEach((row) => {
       row.classList.toggle(styles.active, row === activeRow)
@@ -123,6 +120,15 @@ const NestedSwiper = ({projects}: Props) => {
   }
 
   useEffect(() => {
+    isTouchRef.current = !window.matchMedia('(pointer: fine)').matches
+
+    if (isTouchRef.current) {
+      updateActiveRow()
+      return () => {
+        setActiveRow(null)
+      }
+    }
+
     mousePos.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
 
     const handleMouseMove = (event: MouseEvent) => {
