@@ -38,12 +38,11 @@ const components: PortableTextComponents = {
   },
 }
 
-function MediaCell({ item, active }: { item: MediaItem; active: boolean }) {
+function MediaCell({ item }: { item: MediaItem; }) {
   if (item._type === 'mediaImage') {
     const src = urlFor(item.image).height(1200).auto('format').quality(75).url()
     return (
       <div className={styles.imageBlock}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} alt={item.alt ?? ''} loading="lazy" />
       </div>
     )
@@ -56,7 +55,7 @@ function MediaCell({ item, active }: { item: MediaItem; active: boolean }) {
     if (fileSrc) {
       return (
         <div className={styles.imageBlock}>
-          {active ? <VideoPlayer src={fileSrc} /> : <div className={styles.mediaPlaceholder} />}
+          <VideoPlayer src={fileSrc} />
         </div>
       )
     }
@@ -64,7 +63,7 @@ function MediaCell({ item, active }: { item: MediaItem; active: boolean }) {
     if (externalSrc) {
       return (
         <div className={`${styles.imageBlock} ${styles.imageBlockEmbed}`}>
-          {active && <iframe src={externalSrc} allowFullScreen title={item.caption ?? 'video'} />}
+          <iframe src={externalSrc} allowFullScreen title={item.caption ?? 'video'} />
         </div>
       )
     }
@@ -87,21 +86,47 @@ function MediaCell({ item, active }: { item: MediaItem; active: boolean }) {
 }
 
 const NestedSwiper = ({projects}: Props) => {
-  const containerRef = useRef<HTMLDivElement>(null) 
-  const [isNearViewport, setIsNearViewport] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const mousePos = useRef({ x: 0, y: 0 })
 
-  useEffect(() => {
+  // The active row is whichever `.swiper-slide-v` the mouse is over, by
+  // position — not Swiper's own active-slide tracking. Re-run on every
+  // mousemove, and on every Swiper translate change (its "scroll") so the
+  // active row updates even if the row moves under a still mouse.
+  const updateActiveRow = () => {
     const container = containerRef.current
     if (!container) return
 
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsNearViewport(entry.isIntersecting),
-      { rootMargin: '50% 0px' }
-    )
-    observer.observe(container)
-    return () => observer.disconnect()
+    const rows = container.querySelectorAll<HTMLElement>(`.${styles['swiper-slide-v']}`)
+    const { x: mouseX, y: mouseY } = mousePos.current
+    let activeRow: HTMLElement | null = null
+
+    rows.forEach((row) => {
+      const rect = row.getBoundingClientRect()
+      const isUnderMouse =
+        mouseX >= rect.left && mouseX <= rect.right && mouseY >= rect.top && mouseY <= rect.bottom
+      if (isUnderMouse) activeRow = row
+    })
+
+    rows.forEach((row) => {
+      row.classList.toggle(styles.active, row === activeRow)
+    })
+  }
+
+  useEffect(() => {
+    mousePos.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+
+    const handleMouseMove = (event: MouseEvent) => {
+      mousePos.current = { x: event.clientX, y: event.clientY }
+      updateActiveRow()
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    updateActiveRow()
+
+    return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
-  
+
   return (
     <div ref={containerRef}>
       <Swiper
@@ -112,10 +137,21 @@ const NestedSwiper = ({projects}: Props) => {
         mousewheel={{ forceToAxis: true }}
         loop
         freeMode={true}
+        onSetTranslate={() => updateActiveRow()}
         modules={[Mousewheel, FreeMode]}
       >
         {projects.map((project, index) => (
-          <SwiperSlide className={styles['swiper-slide-v']} key={index}>
+          <SwiperSlide
+            className={styles['swiper-slide-v']}
+            key={index}
+            onMouseEnter={(event) => {
+              // mousemove doesn't bubble out of an <iframe> (embedded video
+              // rows), so a row entered that way would never re-trigger
+              // updateActiveRow via the window listener — catch it here too.
+              mousePos.current = { x: event.clientX, y: event.clientY }
+              updateActiveRow()
+            }}
+          >
             <Swiper
               className={styles.swiper}
               spaceBetween={8}
@@ -128,7 +164,7 @@ const NestedSwiper = ({projects}: Props) => {
             >
               {project.media.map((item, idx) => (
                 <SwiperSlide className={styles['swiper-slide']} key={idx}>
-                  <MediaCell key={`${item._key}-${idx}`} item={item} active={isNearViewport}/>
+                  <MediaCell key={`${item._key}-${idx}`} item={item} />
                 </SwiperSlide>
               ))}
             </Swiper>
