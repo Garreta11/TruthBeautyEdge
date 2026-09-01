@@ -4,6 +4,13 @@ export const oldProject = defineType({
   name: 'oldProject',
   title: 'Old Project',
   type: 'document',
+  fieldsets: [
+    {
+      name: 'clientProject',
+      title: 'Info',
+      options: { columns: 2 },
+    },
+  ],
   fields: [
     defineField({
       name: 'title',
@@ -17,6 +24,59 @@ export const oldProject = defineType({
       type: 'slug',
       options: { source: 'title', maxLength: 96 },
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'client',
+      title: 'Client',
+      type: 'string',
+      fieldset: 'clientProject',
+    }),
+    defineField({
+      name: 'project',
+      title: 'Project',
+      type: 'string',
+      fieldset: 'clientProject',
+    }),
+    defineField({
+      name: 'createdWith',
+      title: 'Created with',
+      type: 'string',
+      fieldset: 'clientProject',
+    }),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'array',
+      fieldset: 'clientProject',
+      of: [
+        {
+          type: 'block',
+          styles: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'H1', value: 'h1' },
+            { title: 'H2', value: 'h2' },
+            { title: 'H3', value: 'h3' },
+            { title: 'H4', value: 'h4' },
+            { title: 'Quote', value: 'blockquote' },
+          ],
+          marks: {
+            decorators: [
+              { title: 'Bold', value: 'strong' },
+              { title: 'Italic', value: 'em' },
+            ],
+            annotations: [
+              {
+                name: 'link',
+                type: 'object',
+                title: 'Link',
+                fields: [
+                  defineField({ name: 'href', type: 'url', title: 'URL' }),
+                ],
+              },
+            ],
+          },
+        },
+      ],
     }),
     defineField({
       name: 'media',
@@ -79,54 +139,6 @@ export const oldProject = defineType({
             select: { caption: 'caption', url: 'url' },
             prepare({ caption, url }) {
               return { title: caption || url || 'Video' }
-            },
-          },
-        },
-        {
-          name: 'mediaText',
-          title: 'Text',
-          type: 'object',
-          fields: [
-            defineField({
-              name: 'body',
-              title: 'Body',
-              type: 'array',
-              of: [
-                {
-                  type: 'block',
-                  styles: [
-                    { title: 'Normal', value: 'normal' },
-                    { title: 'H1', value: 'h1' },
-                    { title: 'H2', value: 'h2' },
-                    { title: 'H3', value: 'h3' },
-                    { title: 'H4', value: 'h4' },
-                    { title: 'Quote', value: 'blockquote' },
-                  ],
-                  marks: {
-                    decorators: [
-                      { title: 'Bold', value: 'strong' },
-                      { title: 'Italic', value: 'em' },
-                    ],
-                    annotations: [
-                      {
-                        name: 'link',
-                        type: 'object',
-                        title: 'Link',
-                        fields: [
-                          defineField({ name: 'href', type: 'url', title: 'URL' }),
-                        ],
-                      },
-                    ],
-                  },
-                },
-              ],
-            }),
-          ],
-          preview: {
-            select: { body: 'body' },
-            prepare({ body }) {
-              const text = body?.[0]?.children?.[0]?.text || 'Text block'
-              return { title: text }
             },
           },
         },

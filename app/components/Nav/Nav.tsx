@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { PortableText, PortableTextComponents } from '@portabletext/react'
 import styles from './Nav.module.scss'
 import ReachOut from '@/app/components/ReachOut/ReachOut'
 import WorkRequest from '@/app/components/WorkRequest/WorkRequest'
@@ -9,8 +10,28 @@ import WorkGate from '@/app/components/WorkGate/WorkGate'
 import Info from '@/app/components/Info/Info'
 import { usePanel } from '@/app/context/PanelContext'
 import { useWorkAccess } from '@/app/context/WorkAccessContext'
+import { useActiveRow } from '@/app/context/ActiveRowContext'
+import { activeRowTextReveal } from '@/app/(site)/animations'
 import Logo from '../Logo/Logo'
 import Link from 'next/link'
+
+const descriptionComponents: PortableTextComponents = {
+  block: {
+    h1: ({ children }) => <h1 data-animate-group="description">{children}</h1>,
+    h2: ({ children }) => <h2 data-animate-group="description">{children}</h2>,
+    h3: ({ children }) => <h3 data-animate-group="description">{children}</h3>,
+    h4: ({ children }) => <h4 data-animate-group="description">{children}</h4>,
+    normal: ({ children }) => <p data-animate-group="description">{children}</p>,
+    blockquote: ({ children }) => <blockquote data-animate-group="description">{children}</blockquote>,
+  },
+  marks: {
+    link: ({ children, value }) => (
+      <a href={value?.href} target="_blank" rel="noopener noreferrer">
+        {children}
+      </a>
+    ),
+  },
+}
 
 interface Props {
   logo?: string
@@ -38,9 +59,18 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
   const pathname = usePathname()
   const { openPanel, setOpenPanel } = usePanel()
   const { unlocked: workUnlocked } = useWorkAccess()
+  const { activeRow } = useActiveRow()
   const workAccessGranted = pathname === '/work' && workUnlocked
   // The logo only animates up on the homepage; elsewhere it's already in place
   const [logoReady, setLogoReady] = useState(pathname !== '/')
+
+  // Runs before paint so the blurred starting state is applied in the same
+  // frame the new activeRow's text lands — otherwise the sharp text would
+  // flash for a frame before the tween's "from" state kicks in.
+  useLayoutEffect(() => {
+    if (!activeRow) return
+    return activeRowTextReveal()
+  }, [activeRow])
 
   if (pathname.startsWith('/studio')) return null
 
@@ -48,16 +78,41 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
   // each render creates its own independent instance (own state/effects), but
   // the markup itself only needs to be written once.
   const descriptionEl = (
-    <div className={`${styles.nav__description} ${workAccessGranted ? styles.hiddenMobile : ''}`}>
+    <div className={`${styles.nav__description} ${workAccessGranted ? styles.fadeOut : ''}`}>
       {description && <p>{description}</p>}
     </div>
   )
 
   const viewWorkEl = (
     <div className={styles.nav__view_work}>
-      <p className={`${styles.createdWith} ${workAccessGranted ? styles.visible : ''}`}>
-        {checkWork?.createdWith}
-      </p>
+      <div className={`${styles.activeRowInfo} ${workAccessGranted ? styles.visible : ''}`}>
+        {activeRow && (
+          <div key={activeRow._id} data-active-row-content className={styles.activeRowInfo__content}>
+            <div className={styles.activeRowInfo__content__header}>
+              {activeRow.client && <p className={styles.activeRowInfo__content__header__client} data-animate-group="header">{activeRow.client}</p>}
+              {activeRow.project && <p className={styles.activeRowInfo__content__header__project} data-animate-group="header">{activeRow.project}</p>}
+            </div>
+            {activeRow.description && (
+              <div className={styles.activeRowInfo__content__body}>
+                <PortableText
+                  value={activeRow.description as Parameters<typeof PortableText>[0]['value']}
+                  components={descriptionComponents}
+                />
+              </div>
+            )}
+            {activeRow.createdWith && (
+              <div className={styles.activeRowInfo__content__footer}>
+                <p className={styles.activeRowInfo__content__footer__title} data-animate-group="createdWith">
+                  Created with
+                </p>
+                <p className={styles.activeRowInfo__content__footer__text} data-animate-group="createdWith">
+                  {activeRow.createdWith}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
       <div className={`${styles.workRequestGroup} ${workAccessGranted ? '' : styles.visible}`}>
         <WorkRequest checkWork={checkWork?.label} />
         {pathname === '/work' && (

@@ -42,6 +42,10 @@ export interface OldProject {
   _type: 'oldProject'
   title: string
   slug: { current: string }
+  client?: string
+  project?: string
+  createdWith?: string
+  description?: import('@portabletext/types').PortableTextBlock[]
   media: MediaItem[]
 }
 

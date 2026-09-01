@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef, type ReactNode } from 'react'
+import { useState, useRef, useEffect, type ReactNode } from 'react'
 import { useInteraction } from '@/app/context/InteractionContext'
+import { panelOpen, panelClose } from '@/app/(site)/animations'
 import styles from './Panel.module.scss'
 
 interface Props {
@@ -12,35 +13,30 @@ interface Props {
   children?: ReactNode
 }
 
-// Sequence: content fades out (0.1s), then the panel shrinks + fades out (0.35s, starting 0.1s in)
-const CLOSE_FADE_MS = 0
-
 export default function Panel({ label, open: openProp, onOpen, onClose, children }: Props) {
   const { setInteracted } = useInteraction()
   const [openState, setOpenState] = useState(false)
-  const [closing, setClosing] = useState(false)
-  const closeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   const open = openProp ?? openState
+
+  useEffect(() => {
+    if (open) {
+      panelOpen(panelRef.current, contentRef.current)
+    } else {
+      panelClose(panelRef.current, contentRef.current)
+    }
+  }, [open])
 
   if (!label) return null
 
   function handleOpen() {
-    if (closeTimeout.current) {
-      clearTimeout(closeTimeout.current)
-      closeTimeout.current = null
-    }
-    setClosing(false)
     onOpen ? onOpen() : setOpenState(true)
     setInteracted()
   }
 
   function handleClose() {
-    setClosing(true)
-    closeTimeout.current = setTimeout(() => {
-      onClose ? onClose() : setOpenState(false)
-      setClosing(false)
-      closeTimeout.current = null
-    }, CLOSE_FADE_MS)
+    onClose ? onClose() : setOpenState(false)
   }
 
   function handleTriggerClick() {
@@ -53,11 +49,8 @@ export default function Panel({ label, open: openProp, onOpen, onClose, children
         <p>{label}</p>
       </button>
 
-      <div
-        className={`${styles.panel} ${open ? styles.open : ''} ${closing ? styles.closing : ''}`}
-        data-open={open}
-      >
-        <div className={`${styles.content} ${closing ? styles.closing : ''}`}>
+      <div className={styles.panel} ref={panelRef} data-open={open}>
+        <div className={styles.content} ref={contentRef}>
           {children}
           <button className={styles.close} onClick={handleClose} aria-label="Close">
             <p>Close</p>

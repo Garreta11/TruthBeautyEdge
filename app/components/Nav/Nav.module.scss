@@ -89,6 +89,13 @@
   white-space: nowrap;
   text-align: right;
   color: white;
+  opacity: 1;
+  transition: var(--transition);
+
+  &.fadeOut {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 .nav__view_work {
@@ -106,7 +113,7 @@
   }
 }
 
-.createdWith,
+.activeRowInfo,
 .workRequestGroup {
   opacity: 0;
   pointer-events: none;
@@ -116,6 +123,60 @@
     transition-delay: 0.5s;
     opacity: 1;
     pointer-events: all;
+  }
+}
+
+.activeRowInfo {
+  pointer-events: none;
+  &__content {
+    max-width: 300px;
+    &__header {
+      display: flex;
+      gap: 40px;
+      margin-bottom: 20px;
+
+      &__client {
+        font-family: var(--font-biz-ud-mincho);
+        font-size: 15px;
+        letter-spacing: 5%;
+
+        @media (max-width: 768px) {
+          font-size: 12px;
+        }
+      }
+
+      &__project {
+        font-family: var(--font-neue-haasho);
+        font-size: 15px;
+        letter-spacing: 5%;
+        @media (max-width: 768px) {
+          font-size: 12px;
+        }
+      }
+    }
+    &__body {
+      white-space: normal;
+      overflow-wrap: break-word;
+      margin-bottom: 50px;
+      font-size: 15px;
+      letter-spacing: 5%;
+      @media (max-width: 768px) {
+        font-size: 12px;
+      }
+    }
+    &__footer {
+      display: flex;
+      gap: 40px;
+
+      &__title {
+        font-family: var(--font-biz-ud-mincho);
+        font-size: 15px;
+        letter-spacing: 5%;
+        @media (max-width: 768px) {
+          font-size: 12px;
+        }
+      }
+    }
   }
 }
 

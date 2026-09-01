@@ -26,9 +26,8 @@
   color: white;
   padding: 20px;
   padding-bottom: 80px;
-  backdrop-filter: blur(50px) !important;
-  /* background: rgba(255, 255, 255, 0.05); */
-  /* background: #00000073; */
+  backdrop-filter: blur(0.1px);
+  will-change: backdrop-filter;
   background: rgba(255, 255, 255, 0);
   border-radius: 22px;
 
@@ -36,22 +35,6 @@
   transform: scale(0);
   opacity: 0;
   pointer-events: none;
-  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.1s ease;
-
-  &.open {
-    opacity: 1;
-    transform: scale(1);
-    pointer-events: all;
-  }
-
-  // Waits for the content to start disappearing (see .content.closing delay below),
-  // then shrinks and fades the panel itself out
-  &.open.closing {
-    opacity: 0;
-    transform: scale(0);
-    /* transition: opacity 0.35s ease 0.1s, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.1s; */
-    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
-  }
 
   @media (max-width: 768px) {
     width: calc(100dvw - 20px);
@@ -63,17 +46,6 @@
 
 .content {
   opacity: 0;
-  transition: var(--transition);
-}
-
-.panel.open .content {
-  opacity: 1;
-  transition-delay: 0.25s;
-}
-
-.panel.open .content.closing {
-  opacity: 0;
-  transition: opacity 0.1s ease;
 }
 
 .close {

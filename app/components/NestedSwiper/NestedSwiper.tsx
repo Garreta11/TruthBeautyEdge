@@ -15,6 +15,7 @@ import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { MediaItem } from '@/sanity/lib/types'
 import { urlFor } from '@/sanity/lib/image'
 import VideoPlayer, { pauseVideoOutside } from '@/app/components/VideoPlayer/VideoPlayer'
+import { useActiveRow } from '@/app/context/ActiveRowContext'
 
 interface Props {
   projects: OldProject[]
@@ -88,6 +89,8 @@ function MediaCell({ item }: { item: MediaItem; }) {
 const NestedSwiper = ({projects}: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const mousePos = useRef({ x: 0, y: 0 })
+  const activeIndexRef = useRef<number | null>(null)
+  const { setActiveRow } = useActiveRow()
 
   // The active row is whichever `.swiper-slide-v` the mouse is over, by
   // position — not Swiper's own active-slide tracking. Re-run on every
@@ -111,6 +114,12 @@ const NestedSwiper = ({projects}: Props) => {
     rows.forEach((row) => {
       row.classList.toggle(styles.active, row === activeRow)
     })
+
+    const activeIndex = activeRow ? Number((activeRow as HTMLElement).dataset.projectIndex) : null
+    if (activeIndex !== activeIndexRef.current) {
+      activeIndexRef.current = activeIndex
+      setActiveRow(activeIndex !== null ? projects[activeIndex] : null)
+    }
   }
 
   useEffect(() => {
@@ -124,7 +133,10 @@ const NestedSwiper = ({projects}: Props) => {
     window.addEventListener('mousemove', handleMouseMove)
     updateActiveRow()
 
-    return () => window.removeEventListener('mousemove', handleMouseMove)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      setActiveRow(null)
+    }
   }, [])
 
   return (
@@ -132,7 +144,7 @@ const NestedSwiper = ({projects}: Props) => {
       <Swiper
         className={styles['swiper-v']}
         direction="vertical"
-        spaceBetween={8}
+        spaceBetween={3}
         slidesPerView="auto"
         mousewheel={{ forceToAxis: true }}
         loop
@@ -144,6 +156,7 @@ const NestedSwiper = ({projects}: Props) => {
           <SwiperSlide
             className={styles['swiper-slide-v']}
             key={index}
+            data-project-index={index}
             onMouseEnter={(event) => {
               // mousemove doesn't bubble out of an <iframe> (embedded video
               // rows), so a row entered that way would never re-trigger
@@ -154,7 +167,7 @@ const NestedSwiper = ({projects}: Props) => {
           >
             <Swiper
               className={styles.swiper}
-              spaceBetween={8}
+              spaceBetween={3}
               slidesPerView="auto"
               mousewheel={{ forceToAxis: true }}
               freeMode={true}

@@ -73,6 +73,10 @@ export async function getAllOldProjects(): Promise<OldProject[]> {
       _type,
       title,
       slug,
+      client,
+      project,
+      createdWith,
+      description,
       ${mediaFragment}
     }`,
     {},
@@ -87,6 +91,10 @@ export async function getOldProjectBySlug(slug: string): Promise<OldProject | nu
       _type,
       title,
       slug,
+      client,
+      project,
+      createdWith,
+      description,
       ${mediaFragment}
     }`,
     { slug },
