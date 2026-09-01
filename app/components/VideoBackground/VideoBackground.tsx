@@ -6,13 +6,18 @@ import { useWorkAccess } from '@/app/context/WorkAccessContext'
 import { usePanel } from '@/app/context/PanelContext'
 import styles from './VideoBackground.module.scss'
 
+const MOBILE_QUERY = '(max-width: 768px)'
+
 interface Props {
   url: string
+  mobileUrl?: string
   infoImageUrl?: string
+  mobileInfoImageUrl?: string
 }
 
-export default function VideoBackground({ url, infoImageUrl }: Props) {
+export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileInfoImageUrl }: Props) {
   const [muted, setMuted] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const pathname = usePathname()
   const { unlocked } = useWorkAccess()
@@ -28,6 +33,17 @@ export default function VideoBackground({ url, infoImageUrl }: Props) {
   // WorkScroll/WorkRow's plain in-flow content regardless of DOM order).
   const catchesClicks = (isHome || isWorkLocked) && Boolean(openPanel)
 
+  const videoUrl = isMobile && mobileUrl ? mobileUrl : url
+  const imageUrl = isMobile && mobileInfoImageUrl ? mobileInfoImageUrl : infoImageUrl
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_QUERY)
+    setIsMobile(mediaQuery.matches)
+    const handleChange = (event: MediaQueryListEvent) => setIsMobile(event.matches)
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
+
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
@@ -36,7 +52,7 @@ export default function VideoBackground({ url, infoImageUrl }: Props) {
     } else {
       video.play().catch(() => {})
     }
-  }, [isWorkUnlocked])
+  }, [isWorkUnlocked, videoUrl])
 
   function handleVideoClick() {
     if ((isHome || isWorkLocked) && openPanel) {
@@ -51,17 +67,17 @@ export default function VideoBackground({ url, infoImageUrl }: Props) {
           ref={videoRef}
           className={styles.video}
           data-video-bg
-          src={url}
+          src={videoUrl}
           autoPlay
           loop
           muted={muted}
           playsInline
           preload="metadata"
         />
-        {infoImageUrl && (
+        {imageUrl && (
           <img
             className={`${styles.infoImage} ${openPanel === 'info' ? styles.visible : ''}`}
-            src={infoImageUrl}
+            src={imageUrl}
             alt=""
           />
         )}

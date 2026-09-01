@@ -127,7 +127,9 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
       "logoUrl": logo.asset->url,
       favicon,
       "backgroundVideoUrl": backgroundVideo.asset->url,
+      "backgroundVideoMobileUrl": backgroundVideoMobile.asset->url,
       "whoWeAreImageUrl": whoWeAreImage.asset->url,
+      "whoWeAreImageMobileUrl": whoWeAreImageMobile.asset->url,
     }`,
     {},
     { next: { revalidate: REVALIDATE_SECONDS } }

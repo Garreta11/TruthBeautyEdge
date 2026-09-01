@@ -77,5 +77,7 @@ export interface SiteSettings {
   logoUrl?: string
   favicon?: SanityImageSource
   backgroundVideoUrl?: string
+  backgroundVideoMobileUrl?: string
   whoWeAreImageUrl?: string
+  whoWeAreImageMobileUrl?: string
 }

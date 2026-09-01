@@ -34,8 +34,21 @@ export const siteSettings = defineType({
       options: { accept: 'video/*' },
     }),
     defineField({
+      name: 'backgroundVideoMobile',
+      title: 'Background Video for Mobile',
+      description: 'Video that loops in the background on mobile devices',
+      type: 'file',
+      options: { accept: 'video/*' },
+    }),
+    defineField({
       name: 'whoWeAreImage',
       title: 'Who We Are Image',
+      type: 'image',
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: 'whoWeAreImageMobile',
+      title: 'Who We Are for Mobile',
       type: 'image',
       options: { hotspot: true },
     }),

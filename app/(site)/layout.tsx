@@ -29,7 +29,9 @@ export default async function SiteLayout({
                 {settings?.backgroundVideoUrl && (
                   <VideoBackground
                     url={settings.backgroundVideoUrl}
+                    mobileUrl={settings?.backgroundVideoMobileUrl}
                     infoImageUrl={settings?.whoWeAreImageUrl}
+                    mobileInfoImageUrl={settings?.whoWeAreImageMobileUrl}
                   />
                 )}
 
