@@ -134,29 +134,60 @@ export function workpageTransitionOut(onComplete?: () => void) {
   )
 }
 
-// Mirrors the old CSS: transform/backdrop-filter ease out over 0.55s
-// (cubic-bezier(0.16, 1, 0.3, 1), approximated here with expo.out) while
-// opacity snaps in over 0.1s; content fades in afterwards, once the panel
-// has mostly finished scaling up.
-export function panelOpen(panelEl: HTMLElement | null, contentEl: HTMLElement | null) {
-  if (!panelEl) return
+export function panelOpen(
+  panelEl: HTMLElement | null,
+  contentEl: HTMLElement | null,
+  blurEl: HTMLElement | null
+) {
+  if (!panelEl || !contentEl || !blurEl) return
 
-  gsap.killTweensOf([panelEl, contentEl].filter(Boolean) as Element[])
+  gsap.killTweensOf(
+    [panelEl, contentEl, blurEl].filter(Boolean) as Element[]
+  )
+
+  gsap.set(blurEl, { backdropFilter: 'blur(50px)' })
 
   const tl = gsap.timeline()
 
-  tl.set(panelEl, { pointerEvents: 'all' }, 0)
-  tl.fromTo(panelEl, { scale: 0 }, { scale: 1, duration: 0.55, ease: 'expo.out' }, 0)
-  tl.fromTo(panelEl, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: 'power1.out' }, 0)
-  tl.fromTo(
+  tl.set(
     panelEl,
-    { backdropFilter: 'blur(0.1px)' },
-    { backdropFilter: 'blur(50px)', duration: 0.55, ease: 'expo.out' },
+    { pointerEvents: 'all' },
+    0
+  )
+
+  tl.fromTo(
+    blurEl,
+    { scale: 0 },
+    {
+      scale: 1,
+      duration: 0.55,
+      ease: 'expo.out',
+    },
+    0
+  )
+
+  tl.fromTo(
+    blurEl,
+    { opacity: 0 },
+    {
+      opacity: 1,
+      duration: 0.1,
+      ease: 'power1.out',
+    },
     0
   )
 
   if (contentEl) {
-    tl.fromTo(contentEl, { opacity: 0 }, { opacity: 1, duration: 1, ease: 'power1.out' }, 0.25)
+    tl.fromTo(
+      contentEl,
+      { opacity: 0 },
+      {
+        opacity: 1,
+        duration: 1,
+        ease: 'power1.out',
+      },
+      0.25
+    )
   }
 
   return tl
@@ -164,10 +195,10 @@ export function panelOpen(panelEl: HTMLElement | null, contentEl: HTMLElement | 
 
 // Content fades out first (0.1s), then the panel shrinks + fades out
 // (starting 0.1s in), mirroring the old .open.closing CSS transitions.
-export function panelClose(panelEl: HTMLElement | null, contentEl: HTMLElement | null) {
-  if (!panelEl) return
+export function panelClose(panelEl: HTMLElement | null, contentEl: HTMLElement | null , blurEl: HTMLElement | null) {
+  if (!panelEl || !blurEl) return
 
-  gsap.killTweensOf([panelEl, contentEl].filter(Boolean) as Element[])
+  gsap.killTweensOf([panelEl, contentEl, blurEl].filter(Boolean) as Element[])
 
   const tl = gsap.timeline()
 
@@ -175,9 +206,8 @@ export function panelClose(panelEl: HTMLElement | null, contentEl: HTMLElement |
     tl.to(contentEl, { opacity: 0, duration: 0.1, ease: 'power1.out' }, 0)
   }
 
-  tl.to(panelEl, { opacity: 0, duration: 0.3, ease: 'power1.out' }, 0)
-  tl.to(panelEl, { backdropFilter: 'blur(0.1px)', duration: 0.3, ease: 'power1.out' }, 0)
-  tl.to(panelEl, { scale: 0, duration: 0.35, ease: 'expo.out' }, 0.1)
+  tl.to(blurEl, { opacity: 0, duration: 0.3, ease: 'power1.out' }, 0)
+  tl.to(blurEl, { scale: 0, duration: 0.35, ease: 'expo.out' }, 0.1)
   tl.set(panelEl, { pointerEvents: 'none' })
 
   return tl

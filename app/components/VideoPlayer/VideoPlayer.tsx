@@ -56,6 +56,14 @@ export default function VideoPlayer({ src }: Props) {
   const [expanded, setExpanded] = useState(false)
   const flipStateRef = useRef<Flip.FlipState | null>(null)
 
+  // Safety net: if this player unmounts while still hovered (e.g. the row
+  // it's in gets removed), make sure the CustomCursor isn't left hidden.
+  useEffect(() => {
+    return () => {
+      window.dispatchEvent(new CustomEvent('video-hover', { detail: false }))
+    }
+  }, [])
+
   useEffect(() => {
     const video = videoEl
     if (!video) return
@@ -166,8 +174,16 @@ export default function VideoPlayer({ src }: Props) {
         data-expanded={expanded}
         ref={containerRef}
         onClick={togglePlay}
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
+        onMouseEnter={() => {
+          setHovering(true)
+          // Let the global CustomCursor know to hide itself so it doesn't
+          // overlap the play/pause indicator that follows the mouse here.
+          window.dispatchEvent(new CustomEvent('video-hover', { detail: true }))
+        }}
+        onMouseLeave={() => {
+          setHovering(false)
+          window.dispatchEvent(new CustomEvent('video-hover', { detail: false }))
+        }}
         onMouseMove={handleMouseMove}
       >
         <video ref={setVideoEl} src={src} autoPlay={false} loop muted={muted} playsInline preload="metadata" />

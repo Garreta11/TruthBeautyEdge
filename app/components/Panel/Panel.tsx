@@ -13,18 +13,28 @@ interface Props {
   children?: ReactNode
 }
 
-export default function Panel({ label, open: openProp, onOpen, onClose, children }: Props) {
+export default function Panel({
+  label,
+  open: openProp,
+  onOpen,
+  onClose,
+  children,
+}: Props) {
   const { setInteracted } = useInteraction()
+
   const [openState, setOpenState] = useState(false)
+
   const panelRef = useRef<HTMLDivElement>(null)
+  const blurRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+
   const open = openProp ?? openState
 
   useEffect(() => {
     if (open) {
-      panelOpen(panelRef.current, contentRef.current)
+      panelOpen(panelRef.current, contentRef.current, blurRef.current)
     } else {
-      panelClose(panelRef.current, contentRef.current)
+      panelClose(panelRef.current, contentRef.current, blurRef.current)
     }
   }, [open])
 
@@ -45,16 +55,33 @@ export default function Panel({ label, open: openProp, onOpen, onClose, children
 
   return (
     <div className={styles.wrapper} data-panel-root>
-      <button className={styles.trigger} onClick={handleTriggerClick}>
+      <button
+        className={styles.trigger}
+        onClick={handleTriggerClick}
+      >
         <p>{label}</p>
       </button>
 
-      <div className={styles.panel} ref={panelRef} data-open={open}>
-        <div className={styles.content} ref={contentRef}>
-          {children}
-          <button className={styles.close} onClick={handleClose} aria-label="Close">
-            <p>Close</p>
-          </button>
+      <div
+        className={styles.panel}
+        ref={panelRef}
+        data-open={open}
+      >
+        <div className={styles.blur} ref={blurRef}>
+          <div
+            className={styles.content}
+            ref={contentRef}
+          >
+            {children}
+
+            <button
+              className={styles.close}
+              onClick={handleClose}
+              aria-label="Close"
+            >
+              <p>Close</p>
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -60,6 +60,8 @@ export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileIn
     }
   }
 
+  if (isWorkUnlocked) return null
+
   return (
     <>
       <div className={`${styles.wrapper} ${isWork ? styles.aboveWork : ''}`}>

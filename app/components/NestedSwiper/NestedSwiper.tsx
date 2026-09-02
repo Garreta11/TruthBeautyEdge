@@ -11,7 +11,6 @@ import 'swiper/css';
 import { Mousewheel, FreeMode } from 'swiper/modules';
 import styles from './NestedSwiper.module.scss'
 
-import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { MediaItem } from '@/sanity/lib/types'
 import { urlFor } from '@/sanity/lib/image'
 import VideoPlayer, { pauseVideoOutside } from '@/app/components/VideoPlayer/VideoPlayer'
@@ -19,24 +18,6 @@ import { useActiveRow } from '@/app/context/ActiveRowContext'
 
 interface Props {
   projects: OldProject[]
-}
-
-const components: PortableTextComponents = {
-  block: {
-    h1: ({ children }) => <h1>{children}</h1>,
-    h2: ({ children }) => <h2>{children}</h2>,
-    h3: ({ children }) => <h3>{children}</h3>,
-    h4: ({ children }) => <h4>{children}</h4>,
-    normal: ({ children }) => <p>{children}</p>,
-    blockquote: ({ children }) => <blockquote>{children}</blockquote>,
-  },
-  marks: {
-    link: ({ children, value }) => (
-      <a href={value?.href} target="_blank" rel="noopener noreferrer">
-        {children}
-      </a>
-    ),
-  },
 }
 
 function MediaCell({ item }: { item: MediaItem; }) {
@@ -120,6 +101,11 @@ const NestedSwiper = ({projects}: Props) => {
   }
 
   useEffect(() => {
+    if (projects.length > 0) {
+      activeIndexRef.current = 0
+      setActiveRow(projects[0])
+    }
+
     isTouchRef.current = !window.matchMedia('(pointer: fine)').matches
 
     if (isTouchRef.current) {
@@ -169,6 +155,7 @@ const NestedSwiper = ({projects}: Props) => {
               // updateActiveRow via the window listener — catch it here too.
               mousePos.current = { x: event.clientX, y: event.clientY }
               updateActiveRow()
+              pauseVideoOutside(event.currentTarget)
             }}
           >
             <Swiper

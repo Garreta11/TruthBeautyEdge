@@ -39,6 +39,12 @@
   cursor: none !important;
 }
 
+// Without this, the wrapper only grows to fit its content, leaving any
+// body background below/beside it (on short pages) with the native cursor.
+.site-cursor-none {
+  min-height: 100dvh;
+}
+
 html {
   height: 100%;
   color-scheme: dark;
