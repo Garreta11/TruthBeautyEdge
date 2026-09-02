@@ -138,11 +138,16 @@ const NestedSwiper = ({projects}: Props) => {
         direction="vertical"
         spaceBetween={3}
         slidesPerView="auto"
-        mousewheel={{ forceToAxis: true }}
+        mousewheel={{
+          forceToAxis: true,
+          thresholdDelta: 30,
+          thresholdTime: 100,
+        }}
         loop
-        freeMode={true}
+        /* freeMode={true} */
         onSetTranslate={() => updateActiveRow()}
-        modules={[Mousewheel, FreeMode]}
+        /* modules={[Mousewheel, FreeMode]} */
+        modules={[Mousewheel]}
       >
         {projects.map((project, index) => (
           <SwiperSlide
