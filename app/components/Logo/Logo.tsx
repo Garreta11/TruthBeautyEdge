@@ -32,7 +32,6 @@ export default function Logo({ url, alt, onTopComplete }: Props) {
         return
       case '/work':
         workpageTransitionOut(() => {
-          homepageTransition(containerRef.current)
           router.push('/')
         })
         return

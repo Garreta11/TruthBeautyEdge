@@ -44,6 +44,12 @@ export function activeRowTextReveal() {
 }
 
 export function homepageTransition(logoEl: Element | null, onLogoTop?: () => void) {
+  // Logo/Nav never unmount between routes, so a prior run's GSAP-set inline
+  // top/left/transform would otherwise persist and make this replay a no-op
+  // move (animating from its old end state back to that same end state).
+  // Clearing them lets the CSS .top-less (centered) state drive the "from".
+  gsap.set(logoEl, { clearProps: 'top,left,transform' })
+
   const tl = gsap.timeline()
   tl.fromTo(
     logoEl,
