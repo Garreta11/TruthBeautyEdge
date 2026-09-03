@@ -96,7 +96,7 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
 
   const viewWorkEl = (
     <div className={styles.nav__view_work}>
-      <div data-active-row-info className={styles.activeRowInfo}>
+      <div data-active-row-info className={`${styles.activeRowInfo} ${openPanel === 'info' ? styles.activeRowInfo__hide : ''}`}>
         {activeRow && (
           <div key={activeRow._id} data-active-row-content className={styles.activeRowInfo__content}>
             <div className={styles.activeRowInfo__content__header}>

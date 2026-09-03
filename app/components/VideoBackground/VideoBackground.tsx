@@ -60,7 +60,7 @@ export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileIn
     }
   }
 
-  if (isWorkUnlocked) return null
+  /* if (isWorkUnlocked) return null */
 
   return (
     <>

@@ -190,6 +190,9 @@
       }
     }
   }
+  &__hide {
+    opacity: 0 !important;
+  }
 }
 
 .workRequestGroup {
