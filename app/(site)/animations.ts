@@ -7,36 +7,17 @@ export function activeRowTextReveal() {
   const activeRowContents = document.querySelectorAll<HTMLElement>('[data-active-row-content]')
 
   const tl = gsap.timeline()
-  const splitLinesList: SplitText[] = []
-  const splitWordsList: SplitText[] = []
 
   activeRowContents.forEach((content) => {
-    if (content.getClientRects().length === 0) return
-
-    const groups = content.querySelectorAll<HTMLElement>('[data-animate-group]')
-
-    groups.forEach((group) => {
-      const splitLines = new SplitText(group, { type: 'lines' })
-      splitLinesList.push(splitLines)
-
-      splitLines.lines.forEach((line) => {
-        const splitWords = new SplitText(line, { type: 'words' })
-        splitWordsList.push(splitWords)
-
-        // The "0" makes every group's lines start together instead of queueing.
-        tl.fromTo(
-          splitWords.words,
-          { filter: 'blur(8px)', autoAlpha: 0 },
-          { filter: 'blur(0px)', autoAlpha: 1, duration: 0.8, ease: 'power2.out', stagger: 0.04 },
-          0
-        )
-      })
-    })
+    tl.fromTo(
+      content,
+      { filter: 'blur(8px)', autoAlpha: 0 },
+      { filter: 'blur(0px)', autoAlpha: 1, duration: 0.8, ease: 'power2.out' },
+      0
+    )
   })
 
   const revert = () => {
-    splitWordsList.forEach((split) => split.revert())
-    splitLinesList.forEach((split) => split.revert())
     tl.kill()
   }
 

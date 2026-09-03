@@ -13,9 +13,6 @@ interface VideoHoverDetail {
   playing: boolean
 }
 
-// All three drawn in the same 14x16 box so MorphSVG has a consistent
-// coordinate space to tween between: the default dot, a play triangle,
-// and a pause glyph (two bars as one path's subpaths).
 const SHAPES = {
   idle: 'M7,3.5 a3.5,3.5 0 1,0 0.01,0 Z',
   play: 'M0,0 L14,8 L0,16 Z',
@@ -37,9 +34,6 @@ export default function CustomCursor() {
     if (!cursor || !path) return
 
     let revealed = false
-    // True while over that player's controls (volume, seek bar, fullscreen)
-    // — hides the cursor entirely so the real pointer takes over there,
-    // since those need precise clicking/dragging.
     let overControls = false
     let shape: Shape = 'idle'
 
@@ -57,7 +51,6 @@ export default function CustomCursor() {
       cursor!.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`
       if (!revealed) {
         revealed = true
-        cursor!.style.backdropFilter = 'blur(100px)'
       }
       updateOpacity()
     }
