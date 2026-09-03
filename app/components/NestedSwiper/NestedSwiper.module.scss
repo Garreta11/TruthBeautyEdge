@@ -18,6 +18,7 @@
 .swiper {
   width: 100dvw;
   height: 85dvh;
+  touch-action: pan-y;
 }
 
 .swiper-slide {

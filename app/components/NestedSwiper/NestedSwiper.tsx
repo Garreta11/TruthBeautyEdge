@@ -117,6 +117,7 @@ const NestedSwiper = ({projects}: Props) => {
               freeMode={true}
               loop
               nested
+              touchEventsTarget="container"
               modules={[Mousewheel, FreeMode, Keyboard]}
             >
               {project.media.map((item, idx) => (
