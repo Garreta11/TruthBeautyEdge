@@ -11,7 +11,12 @@
   width: 100dvw;
   height: 100dvh;
   display: grid;
-  grid-template-rows: repeat(3, 1fr);
+  // minmax(0, 1fr) instead of plain 1fr — a bare `fr` track has an implicit
+  // `auto` minimum, so oversized content (e.g. a long activeRowInfo) would
+  // grow the track past its equal share. Clamping the min to 0 keeps every
+  // row the same height regardless of page/content; taller content overflows
+  // the row visually instead of resizing it.
+  grid-template-rows: repeat(3, minmax(0, 1fr));
   padding: var(--margin);
   pointer-events: none;
 
@@ -30,7 +35,8 @@
     z-index: 10;
     width: 100dvw;
     height: 100dvh;
-    grid-template-rows: repeat(6, 1fr);
+    // Same minmax(0, 1fr) fix as .nav — keeps mobile rows a fixed equal height.
+    grid-template-rows: repeat(6, minmax(0, 1fr));
     padding: var(--margin);
     pointer-events: none;
     font-size: 12px;
