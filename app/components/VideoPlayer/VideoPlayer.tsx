@@ -8,6 +8,8 @@ import styles from './VideoPlayer.module.scss'
 
 gsap.registerPlugin(Flip)
 
+const MOBILE_QUERY = '(max-width: 768px)'
+
 // Shared across every VideoPlayer instance so only one can ever be playing at once.
 let currentlyPlaying: HTMLVideoElement | null = null
 
@@ -46,7 +48,6 @@ export default function VideoPlayer({ src }: Props) {
   // ref: the listener effect below needs to re-run whenever the actual
   // <video> node changes, and a plain ref wouldn't notify it of that.
   const [videoEl, setVideoEl] = useState<HTMLVideoElement | null>(null)
-  const cursorRef = useRef<HTMLDivElement>(null)
   const [muted, setMuted] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -54,13 +55,37 @@ export default function VideoPlayer({ src }: Props) {
   const [hovering, setHovering] = useState(false)
   const [overControls, setOverControls] = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const flipStateRef = useRef<Flip.FlipState | null>(null)
+  // Tracks whether this specific video is the one currently in device
+  // fullscreen, so the fullscreenchange listener knows to pause it on exit
+  // without reacting to some other VideoPlayer's fullscreen change.
+  const enteredFullscreenRef = useRef(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_QUERY)
+    setIsMobile(mediaQuery.matches)
+    const handleChange = (event: MediaQueryListEvent) => setIsMobile(event.matches)
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
+
+  // Reports raw hover/controls/playback state to the global CustomCursor,
+  // which owns all the logic for how that translates into what's shown —
+  // this component just describes what's happening, not how to render it.
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent('video-hover', { detail: { hovering, overControls, playing: isPlaying } })
+    )
+  }, [hovering, overControls, isPlaying])
 
   // Safety net: if this player unmounts while still hovered (e.g. the row
   // it's in gets removed), make sure the CustomCursor isn't left hidden.
   useEffect(() => {
     return () => {
-      window.dispatchEvent(new CustomEvent('video-hover', { detail: false }))
+      window.dispatchEvent(
+        new CustomEvent('video-hover', { detail: { hovering: false, overControls: false, playing: false } })
+      )
     }
   }, [])
 
@@ -88,10 +113,29 @@ export default function VideoPlayer({ src }: Props) {
       }
     }
 
+    // Device fullscreen exit should pause playback rather than leaving the
+    // video running behind the now-collapsed inline player. iOS's native
+    // video fullscreen fires webkitendfullscreen directly on the video;
+    // everywhere else the standard Fullscreen API fires fullscreenchange on
+    // the document, so guard that one with enteredFullscreenRef to avoid
+    // pausing this video in response to some other video's fullscreen change.
+    function handleWebkitEndFullscreen() {
+      enteredFullscreenRef.current = false
+      video!.pause()
+    }
+    function handleFullscreenChange() {
+      if (!enteredFullscreenRef.current) return
+      if (document.fullscreenElement === video) return
+      enteredFullscreenRef.current = false
+      video!.pause()
+    }
+
     video.addEventListener('timeupdate', handleTimeUpdate)
     video.addEventListener('loadedmetadata', handleLoadedMetadata)
     video.addEventListener('play', handlePlay)
     video.addEventListener('pause', handlePause)
+    video.addEventListener('webkitendfullscreen', handleWebkitEndFullscreen)
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
 
     // Metadata may have already loaded before this effect attached its listener
     if (video.readyState >= 1) {
@@ -103,6 +147,8 @@ export default function VideoPlayer({ src }: Props) {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata)
       video.removeEventListener('play', handlePlay)
       video.removeEventListener('pause', handlePause)
+      video.removeEventListener('webkitendfullscreen', handleWebkitEndFullscreen)
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
     }
     // Depends on the actual <video> node (via the videoEl callback ref)
     // rather than running once on mount — the node is portaled between
@@ -158,12 +204,34 @@ export default function VideoPlayer({ src }: Props) {
     }
   }
 
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const cursor = cursorRef.current
-    if (!cursor) return
-    const rect = e.currentTarget.getBoundingClientRect()
-    cursor.style.left = `${e.clientX - rect.left}px`
-    cursor.style.top = `${e.clientY - rect.top}px`
+  // On mobile, tapping the video hands playback to the device's native
+  // fullscreen video player instead of toggling play inline — just the
+  // <video> itself, not the surrounding player/controls. iOS Safari has no
+  // generic element Fullscreen API for this; only the video's own
+  // webkitEnterFullscreen opens its native fullscreen UI.
+  function handlePlayerClick() {
+    const video = videoEl
+    if (!video) return
+
+    if (!isMobile) {
+      togglePlay()
+      return
+    }
+
+    const iosVideo = video as HTMLVideoElement & { webkitEnterFullscreen?: () => void }
+    if (typeof iosVideo.webkitEnterFullscreen === 'function') {
+      enteredFullscreenRef.current = true
+      iosVideo.webkitEnterFullscreen()
+    } else if (video.requestFullscreen) {
+      enteredFullscreenRef.current = true
+      video.requestFullscreen().catch(() => {
+        enteredFullscreenRef.current = false
+      })
+    }
+
+    if (video.paused) {
+      video.play().catch(() => {})
+    }
   }
 
   const player = (
@@ -173,33 +241,17 @@ export default function VideoPlayer({ src }: Props) {
         className={`${styles.player} ${expanded ? styles.expanded : ''}`}
         data-expanded={expanded}
         ref={containerRef}
-        onClick={togglePlay}
-        onMouseEnter={() => {
-          setHovering(true)
-          // Let the global CustomCursor know to hide itself so it doesn't
-          // overlap the play/pause indicator that follows the mouse here.
-          window.dispatchEvent(new CustomEvent('video-hover', { detail: true }))
-        }}
-        onMouseLeave={() => {
-          setHovering(false)
-          window.dispatchEvent(new CustomEvent('video-hover', { detail: false }))
-        }}
-        onMouseMove={handleMouseMove}
+        onClick={handlePlayerClick}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
       >
         <video ref={setVideoEl} src={src} autoPlay={false} loop muted={muted} playsInline preload="metadata" />
 
-      <div ref={cursorRef} className={`${styles.playCursor} ${hovering && !overControls ? styles.visible : ''}`}>
-        {isPlaying ? (
-          <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="4" height="16" fill="white" opacity="0.24" />
-            <rect x="10" width="4" height="16" fill="white" opacity="0.24" />
-          </svg>
-        ) : (
-          <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 0L14 8L0 16V0Z" fill="white" opacity="0.24" />
-          </svg>
-        )}
-      </div>
+      {isMobile && !isPlaying && !expanded && (
+        <div className={styles.playButton} aria-hidden="true">
+          <span className={styles.playLabel}>Play</span>
+        </div>
+      )}
 
       <p
         className={`${styles.volume} ${!muted ? styles.active : ''}`}

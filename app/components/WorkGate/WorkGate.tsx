@@ -8,6 +8,7 @@ import { validateWorkPassword } from '@/app/(site)/work/actions'
 import { useWorkAccess } from '@/app/context/WorkAccessContext'
 import styles from './WorkGate.module.scss'
 import { homepageTransitionOut } from '@/app/(site)/animations'
+import { usePanel } from '@/app/context/PanelContext'
 
 interface Props {
   mail?: string
@@ -20,6 +21,7 @@ export default function WorkGate({ mail, subject, body }: Props) {
   const [code, setCode] = useState('')
   const [error, setError] = useState(false)
   const { setUnlocked } = useWorkAccess()
+  const { openPanel } = usePanel()
 
   useEffect(() => {
     gsap.fromTo(gateRef.current, { opacity: 0 }, { opacity: 1, duration: 1, ease: 'power4.out' })
@@ -68,7 +70,7 @@ export default function WorkGate({ mail, subject, body }: Props) {
   }
 
   return (
-    <div ref={gateRef} className={styles.gate}>
+    <div ref={gateRef} className={`${styles.gate} ${openPanel === 'info' ? styles.gate__hide : ''}`}>
       {mailtoHref && (
         <a href={mailtoHref} className={styles.request}>
           Request code

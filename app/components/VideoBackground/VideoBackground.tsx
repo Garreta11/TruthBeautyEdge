@@ -7,6 +7,7 @@ import { usePanel } from '@/app/context/PanelContext'
 import styles from './VideoBackground.module.scss'
 
 const MOBILE_QUERY = '(max-width: 768px)'
+const VOLUME_FADE_MS = 1500
 
 interface Props {
   url: string
@@ -19,6 +20,8 @@ export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileIn
   const [muted, setMuted] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const fadeFrameRef = useRef<number | null>(null)
+  const muteFadeFrameRef = useRef<number | null>(null)
   const pathname = usePathname()
   const { unlocked } = useWorkAccess()
   const { openPanel, setOpenPanel } = usePanel()
@@ -47,12 +50,95 @@ export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileIn
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
+
+    if (fadeFrameRef.current !== null) {
+      cancelAnimationFrame(fadeFrameRef.current)
+      fadeFrameRef.current = null
+    }
+
     if (isWorkUnlocked) {
-      video.pause()
+      if (video.muted || video.paused) {
+        video.volume = 1
+        video.pause()
+        return
+      }
+      let startTime: number | null = null
+      const step = (now: number) => {
+        if (startTime === null) startTime = now
+        const t = Math.min((now - startTime) / VOLUME_FADE_MS, 1)
+        video.volume = 1 - t
+        if (t < 1) {
+          fadeFrameRef.current = requestAnimationFrame(step)
+        } else {
+          video.pause()
+          video.volume = 1
+          fadeFrameRef.current = null
+        }
+      }
+      fadeFrameRef.current = requestAnimationFrame(step)
     } else {
+      video.volume = 1
       video.play().catch(() => {})
     }
+
+    return () => {
+      if (fadeFrameRef.current !== null) {
+        cancelAnimationFrame(fadeFrameRef.current)
+        fadeFrameRef.current = null
+      }
+    }
   }, [isWorkUnlocked, videoUrl])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    if (muteFadeFrameRef.current !== null) {
+      cancelAnimationFrame(muteFadeFrameRef.current)
+      muteFadeFrameRef.current = null
+    }
+
+    let startTime: number | null = null
+
+    if (muted) {
+      if (video.muted) return
+      const from = video.volume
+      const step = (now: number) => {
+        if (startTime === null) startTime = now
+        const t = Math.min((now - startTime) / VOLUME_FADE_MS, 1)
+        video.volume = from * (1 - t)
+        if (t < 1) {
+          muteFadeFrameRef.current = requestAnimationFrame(step)
+        } else {
+          video.muted = true
+          video.volume = 1
+          muteFadeFrameRef.current = null
+        }
+      }
+      muteFadeFrameRef.current = requestAnimationFrame(step)
+    } else {
+      video.muted = false
+      video.volume = 0
+      const step = (now: number) => {
+        if (startTime === null) startTime = now
+        const t = Math.min((now - startTime) / VOLUME_FADE_MS, 1)
+        video.volume = t
+        if (t < 1) {
+          muteFadeFrameRef.current = requestAnimationFrame(step)
+        } else {
+          muteFadeFrameRef.current = null
+        }
+      }
+      muteFadeFrameRef.current = requestAnimationFrame(step)
+    }
+
+    return () => {
+      if (muteFadeFrameRef.current !== null) {
+        cancelAnimationFrame(muteFadeFrameRef.current)
+        muteFadeFrameRef.current = null
+      }
+    }
+  }, [muted])
 
   function handleVideoClick() {
     if ((isHome || isWorkLocked) && openPanel) {
@@ -72,7 +158,7 @@ export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileIn
           src={videoUrl}
           autoPlay
           loop
-          muted={muted}
+          muted
           playsInline
           preload="metadata"
         />
@@ -88,13 +174,15 @@ export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileIn
         className={`${styles.clickCatcher} ${catchesClicks ? styles.active : ''}`}
         onClick={handleVideoClick}
       />
-      <p
-        className={`${styles.volume} ${!muted ? styles.active : ""} ${isWorkUnlocked ? styles.hidden : ''}`}
-        onClick={() => setMuted((m) => !m)}
-        data-video-volume
-      >
-        Sound
-      </p>
+      {!isWorkUnlocked && (
+        <p
+          className={`${styles.volume} ${!muted ? styles.active : ""}`}
+          onClick={() => setMuted((m) => !m)}
+          data-video-volume
+        >
+          Sound
+        </p>
+      )}
     </>
   )
 }

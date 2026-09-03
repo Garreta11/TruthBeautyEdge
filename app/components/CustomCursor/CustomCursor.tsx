@@ -1,25 +1,56 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { gsap } from 'gsap'
+import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
 import styles from './CustomCursor.module.scss'
+
+gsap.registerPlugin(MorphSVGPlugin)
+
+interface VideoHoverDetail {
+  hovering: boolean
+  overControls: boolean
+  playing: boolean
+}
+
+// All three drawn in the same 14x16 box so MorphSVG has a consistent
+// coordinate space to tween between: the default dot, a play triangle,
+// and a pause glyph (two bars as one path's subpaths).
+const SHAPES = {
+  idle: 'M7,3.5 a3.5,3.5 0 1,0 0.01,0 Z',
+  play: 'M0,0 L14,8 L0,16 Z',
+  pause: 'M0,0 H4 V16 H0 Z M10,0 H14 V16 H10 Z',
+} as const
+
+type Shape = keyof typeof SHAPES
 
 export default function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null)
+  const pathRef = useRef<SVGPathElement>(null)
 
   useEffect(() => {
     // Coarse pointers (touch) have no hover position to follow.
     if (!window.matchMedia('(pointer: fine)').matches) return
 
     const cursor = cursorRef.current
-    if (!cursor) return
+    const path = pathRef.current
+    if (!cursor || !path) return
 
     let revealed = false
-    // While true (mouse is over a VideoPlayer), the custom cursor stays
-    // hidden so it doesn't overlap that player's own play/pause indicator.
-    let overVideo = false
+    // True while over that player's controls (volume, seek bar, fullscreen)
+    // — hides the cursor entirely so the real pointer takes over there,
+    // since those need precise clicking/dragging.
+    let overControls = false
+    let shape: Shape = 'idle'
 
     function updateOpacity() {
-      cursor!.style.opacity = revealed && !overVideo ? '1' : '0'
+      cursor!.style.opacity = revealed && !overControls ? '1' : '0'
+    }
+
+    function morphTo(next: Shape) {
+      if (next === shape) return
+      shape = next
+      gsap.to(path, { duration: 0.4, morphSVG: SHAPES[next], ease: 'power3.inOut' })
     }
 
     function onMouseMove(e: MouseEvent) {
@@ -32,7 +63,11 @@ export default function CustomCursor() {
     }
 
     function onVideoHover(e: Event) {
-      overVideo = (e as CustomEvent<boolean>).detail
+      const detail = (e as CustomEvent<VideoHoverDetail>).detail
+      const overVideo = detail.hovering && !detail.overControls
+      overControls = detail.hovering && detail.overControls
+      cursor!.classList.toggle(styles.video, overVideo)
+      morphTo(overVideo ? (detail.playing ? 'pause' : 'play') : 'idle')
       updateOpacity()
     }
 
@@ -47,5 +82,11 @@ export default function CustomCursor() {
     }
   }, [])
 
-  return <div ref={cursorRef} className={styles.cursor} />
+  return (
+    <div ref={cursorRef} className={styles.cursor}>
+      <svg viewBox="0 0 14 16" width="14" height="16">
+        <path ref={pathRef} d={SHAPES.idle} fill="white" />
+      </svg>
+    </div>
+  )
 }

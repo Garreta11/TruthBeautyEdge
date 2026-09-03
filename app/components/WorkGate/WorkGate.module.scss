@@ -15,6 +15,10 @@
     left: 10px;
     top: calc(3 *  100dvh/6 + 100dvh/12);
   }
+
+  &__hide {
+    opacity: 0 !important;
+  }
 }
 
 .request {

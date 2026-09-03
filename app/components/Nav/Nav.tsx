@@ -125,7 +125,7 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
         )}
       </div>
       {!activeRow && (
-        <div data-work-request-group className={styles.workRequestGroup}>
+        <div data-work-request-group className={`${styles.workRequestGroup}`}>
           <WorkRequest checkWork={checkWork?.label} />
           {pathname === '/work' && (
             <WorkGate mail={reachOut?.mail} subject={mail?.subject} body={mail?.body} />

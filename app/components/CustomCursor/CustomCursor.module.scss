@@ -2,14 +2,17 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 16px;
   border-radius: 50%;
   z-index: 100000;
   opacity: 1;
   pointer-events: none;
   will-change: transform;
   transition: opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   /* background: #ffffff10; */
   background: #ffffff3b;
@@ -18,5 +21,15 @@
 
   @media (pointer: coarse) {
     display: none;
+  }
+
+  // Hovering a VideoPlayer's playable area drops the blurred-circle look
+  // in favor of a bare icon (MorphSVG tweens the inner path between the
+  // idle dot and this shape) sitting directly over the video.
+  &.video {
+    border-radius: 0;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 }
