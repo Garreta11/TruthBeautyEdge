@@ -103,6 +103,13 @@
   color: white;
   position: relative;
 
+  // Overrides the `.row > *` blanket pointer-events: all — this cell overlaps
+  // the swiper below, and activeRowInfo needs clicks/drags to fall all the way
+  // through to it, not just past its own (already pointer-events: none) box
+  // and into this still-interactive parent. workRequestGroup opts itself back
+  // in below since it's the only part of this cell that's actually clickable.
+  pointer-events: none;
+
   // Stacks both crossfading states in the same cell so the box sizes to
   // whichever is larger, instead of the 0×0 box position: absolute would give.
   display: grid;
@@ -113,23 +120,22 @@
   }
 }
 
-.activeRowInfo,
+// Initial (locked) state — workRequestGroup shown, activeRowInfo hidden.
+// The crossfade between them on workAccessGranted changes is handled by
+// workAccessTransition() in animations.ts via GSAP, not CSS transitions.
 .workRequestGroup {
-  opacity: 0;
-  pointer-events: none;
-  transition: var(--transition);
-
-  &.visible {
-    transition-delay: 0.5s;
-    opacity: 1;
-    pointer-events: all;
-  }
+  opacity: 1;
+  pointer-events: all;
 }
 
 .activeRowInfo {
+  opacity: 0;
   pointer-events: none;
   &__content {
     max-width: 300px;
+    @media (max-width: 768px) {
+      max-width: 250px;
+    }
     &__header {
       display: flex;
       gap: 40px;

@@ -11,7 +11,7 @@
   transition: opacity 0.3s ease;
 }
 
-.swiper-slide-v.active {
+.swiper-slide-v:global(.swiper-slide-active) {
   opacity: 1;
 }
 

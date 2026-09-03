@@ -43,6 +43,33 @@ export function activeRowTextReveal() {
   return revert
 }
 
+// Crossfades the nav's workRequestGroup / activeRowInfo pair when work access
+// is granted or revoked: the outgoing group fades out fully before the
+// incoming one starts fading in, rather than overlapping.
+export function workAccessTransition(granted: boolean) {
+  const workRequestEls = gsap.utils.toArray<HTMLElement>('[data-work-request-group]')
+  const activeRowEls = gsap.utils.toArray<HTMLElement>('[data-active-row-info]')
+
+  gsap.killTweensOf([...workRequestEls, ...activeRowEls])
+
+  const fadeOutEls = granted ? workRequestEls : activeRowEls
+  const fadeInEls = granted ? activeRowEls : workRequestEls
+
+  const tl = gsap.timeline()
+
+  tl.set(fadeOutEls, { pointerEvents: 'none' })
+  tl.to(fadeOutEls, { opacity: 0, duration: 1, ease: 'power1.out' })
+  // activeRowInfo must stay click-through even while visible — the swiper
+  // beneath needs the hover/touch — so only workRequestGroup (the actual CTA)
+  // regains pointer-events when it's the one fading in.
+  if (fadeInEls === workRequestEls) {
+    tl.set(fadeInEls, { pointerEvents: 'all' })
+  }
+  tl.to(fadeInEls, { opacity: 1, duration: 1, ease: 'power1.out' })
+
+  return tl
+}
+
 export function homepageTransition(logoEl: Element | null, onLogoTop?: () => void) {
   // Logo/Nav never unmount between routes, so a prior run's GSAP-set inline
   // top/left/transform would otherwise persist and make this replay a no-op

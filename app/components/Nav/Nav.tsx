@@ -1,6 +1,6 @@
 'use client'
 
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 import styles from './Nav.module.scss'
@@ -11,7 +11,7 @@ import Info from '@/app/components/Info/Info'
 import { usePanel } from '@/app/context/PanelContext'
 import { useWorkAccess } from '@/app/context/WorkAccessContext'
 import { useActiveRow } from '@/app/context/ActiveRowContext'
-import { activeRowTextReveal } from '@/app/(site)/animations'
+import { activeRowTextReveal, workAccessTransition } from '@/app/(site)/animations'
 import Logo from '../Logo/Logo'
 import Link from 'next/link'
 
@@ -72,6 +72,17 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
     return activeRowTextReveal()
   }, [activeRow])
 
+  // Skips the animation on mount — the base CSS already matches the initial
+  // (locked) state, so only crossfade on later changes to workAccessGranted.
+  const isFirstAccessRender = useRef(true)
+  useEffect(() => {
+    if (isFirstAccessRender.current) {
+      isFirstAccessRender.current = false
+      return
+    }
+    workAccessTransition(workAccessGranted)
+  }, [workAccessGranted])
+
   if (pathname.startsWith('/studio')) return null
 
   // Defined once, rendered into both the desktop and mobile <nav> trees below —
@@ -85,7 +96,7 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
 
   const viewWorkEl = (
     <div className={styles.nav__view_work}>
-      <div className={`${styles.activeRowInfo} ${workAccessGranted ? styles.visible : ''}`}>
+      <div data-active-row-info className={styles.activeRowInfo}>
         {activeRow && (
           <div key={activeRow._id} data-active-row-content className={styles.activeRowInfo__content}>
             <div className={styles.activeRowInfo__content__header}>
@@ -113,12 +124,14 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
           </div>
         )}
       </div>
-      <div className={`${styles.workRequestGroup} ${workAccessGranted ? '' : styles.visible}`}>
-        <WorkRequest checkWork={checkWork?.label} />
-        {pathname === '/work' && (
-          <WorkGate mail={reachOut?.mail} subject={mail?.subject} body={mail?.body} />
-        )}
-      </div>
+      {!activeRow && (
+        <div data-work-request-group className={styles.workRequestGroup}>
+          <WorkRequest checkWork={checkWork?.label} />
+          {pathname === '/work' && (
+            <WorkGate mail={reachOut?.mail} subject={mail?.subject} body={mail?.body} />
+          )}
+        </div>
+      )}
     </div>
   )
 

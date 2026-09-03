@@ -208,7 +208,7 @@ export default function VideoPlayer({ src }: Props) {
           setMuted((m) => !m)
         }}
       >
-        Volume
+        Sound
       </p>
 
       <div

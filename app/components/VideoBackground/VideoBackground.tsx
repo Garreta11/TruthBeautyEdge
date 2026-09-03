@@ -93,7 +93,7 @@ export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileIn
         onClick={() => setMuted((m) => !m)}
         data-video-volume
       >
-        Volume
+        Sound
       </p>
     </>
   )
