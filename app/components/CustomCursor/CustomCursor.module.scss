@@ -13,6 +13,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  svg {
+    scale: 1.5;
+    transition: scale 0.3s ease;
+  }
   
 
   @media (pointer: coarse) {
@@ -27,6 +32,25 @@
     background: transparent !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+  }
+
+  // Mirrors the current SHAPES key, so CSS can target the cursor per-shape.
+  &.idle {
+    svg {
+      scale: 1.5;
+    }
+  }
+
+  &.play {
+    svg {
+      scale: 2.5;
+    }
+  }
+  
+  &.pause {
+    svg {
+      scale: 2.5;
+    }
   }
 
   path {

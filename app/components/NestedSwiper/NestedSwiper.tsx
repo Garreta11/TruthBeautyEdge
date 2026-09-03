@@ -13,7 +13,7 @@ import styles from './NestedSwiper.module.scss'
 
 import type { MediaItem } from '@/sanity/lib/types'
 import { urlFor } from '@/sanity/lib/image'
-import VideoPlayer, { pauseVideoOutside } from '@/app/components/VideoPlayer/VideoPlayer'
+import VideoPlayer, { pauseAllVideos } from '@/app/components/VideoPlayer/VideoPlayer'
 import { useActiveRow } from '@/app/context/ActiveRowContext'
 
 interface Props {
@@ -96,7 +96,10 @@ const NestedSwiper = ({projects}: Props) => {
         }}
         loop
         keyboard={{ enabled: true, onlyInViewport: true }}
-        onSlideChange={(e) => updateActiveRow(e)}
+        onSlideChange={(e) => {
+          updateActiveRow(e)
+          pauseAllVideos()
+        }}
         modules={[Mousewheel, Keyboard]}
       >
         {projects.map((project, index) => (
@@ -104,9 +107,6 @@ const NestedSwiper = ({projects}: Props) => {
             className={styles['swiper-slide-v']}
             key={index}
             data-project-index={index}
-            onMouseEnter={(event) => {
-              pauseVideoOutside(event.currentTarget)
-            }}
           >
             <Swiper
               className={styles.swiper}

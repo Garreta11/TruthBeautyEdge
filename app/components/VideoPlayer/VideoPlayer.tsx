@@ -27,6 +27,12 @@ export function pauseVideoOutside(container: Element | null) {
   currentlyPlaying.pause()
 }
 
+export function pauseAllVideos() {
+  if (currentlyPlaying) {
+    currentlyPlaying.pause()
+  }
+}
+
 interface Props {
   src: string
 }

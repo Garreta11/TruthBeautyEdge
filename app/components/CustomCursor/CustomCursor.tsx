@@ -43,7 +43,9 @@ export default function CustomCursor() {
 
     function morphTo(next: Shape) {
       if (next === shape) return
+      cursor!.classList.remove(styles[shape])
       shape = next
+      cursor!.classList.add(styles[shape])
       gsap.to(path, { duration: 0.4, morphSVG: SHAPES[next], ease: 'power3.inOut' })
     }
 
@@ -76,7 +78,7 @@ export default function CustomCursor() {
   }, [])
 
   return (
-    <div ref={cursorRef} className={styles.cursor}>
+    <div ref={cursorRef} className={`${styles.cursor} ${styles.idle}`}>
       <svg viewBox="0 0 14 16" width="14" height="16">
         <path ref={pathRef} d={SHAPES.idle} fill="white" />
       </svg>
