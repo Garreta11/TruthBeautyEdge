@@ -15,6 +15,14 @@
   opacity: 1;
 }
 
+// Wraps each project's inner Swiper so the IntersectionObserver that gates
+// its videos (see NestedSwiper.tsx) observes an element sized to match it,
+// rather than shrink-wrapping to nothing.
+.projectSlideObserver {
+  width: 100%;
+  height: 100%;
+}
+
 .swiper {
   width: 100dvw;
   height: 85dvh;
