@@ -2,9 +2,6 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 14px;
-  height: 16px;
-  border-radius: 50%;
   z-index: 100000;
   opacity: 1;
   pointer-events: none;
@@ -14,53 +11,36 @@
   align-items: center;
   justify-content: center;
 
-  svg {
-    scale: 1.5;
-    transition: scale 0.3s ease;
-  }
-  
-
   @media (pointer: coarse) {
     display: none;
   }
 
-  // Hovering a VideoPlayer's playable area drops the blurred-circle look
-  // in favor of a bare icon (MorphSVG tweens the inner path between the
-  // idle dot and this shape) sitting directly over the video.
-  &.video {
-    border-radius: 0;
-    background: transparent !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  // Mirrors the current SHAPES key, so CSS can target the cursor per-shape.
-  &.idle {
-    svg {
-      scale: 1.5;
-    }
-  }
-
-  &.play {
-    svg {
-      scale: 3.5;
-      path {
-        opacity: 1;
-      }
-    }
+  .dot {
+    display: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0.5;
   }
   
-  &.pause {
-    svg {
-      scale: 3.5;
-
-      path {
-        opacity: 1;
-      }
-    }
+  .label {
+    font-family: var(--font-biz-ud-mincho);
+    opacity: 0.5;
+    display: none;
+    color: white;
+    font-size: 15px;
+    letter-spacing: 5%;
+    white-space: nowrap;
   }
 
-  path {
-    opacity: 0.5;
+  // Mirrors the current Shape value, so CSS can target the cursor per-state.
+  &.idle .dot {
+    display: block;
+  }
+
+  &.play .label,
+  &.pause .label {
+    display: block;
   }
 }

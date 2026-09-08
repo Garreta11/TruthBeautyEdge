@@ -274,12 +274,6 @@ export default function VideoPlayer({ src, isCurrent = false }: Props) {
       >
         <video ref={setVideoEl} src={src} autoPlay={false} loop muted={muted} playsInline preload="metadata" />
 
-      {isMobile && !isPlaying && !expanded && (
-        <div className={styles.playButton} aria-hidden="true">
-          <span className={styles.playLabel}>Play</span>
-        </div>
-      )}
-
       <p
         className={`${styles.volume} ${!muted ? styles.active : ''}`}
         onClick={(e) => {
