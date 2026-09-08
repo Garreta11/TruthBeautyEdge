@@ -30,6 +30,16 @@
   &::-webkit-scrollbar {
     display: none;
   }
+
+  &::selection {
+    background-color: #000000;
+    color: white;
+  }
+
+  &::-moz-selection {
+    background-color: #000000;
+    color: white;
+  }
 }
 
 // Custom cursor replaces the native one, but only on the public site — the
