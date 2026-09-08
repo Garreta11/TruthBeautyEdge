@@ -280,6 +280,8 @@ export default function VideoPlayer({ src, isCurrent = false }: Props) {
           e.stopPropagation()
           setMuted((m) => !m)
         }}
+        onMouseEnter={() => setOverControls(true)}
+        onMouseLeave={() => setOverControls(false)}
       >
         Sound
       </p>
