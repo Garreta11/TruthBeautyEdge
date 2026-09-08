@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import { gsap } from 'gsap'
 import { Flip } from 'gsap/Flip'
 import styles from './VideoPlayer.module.scss'
+import { useActiveRow } from '@/app/context/ActiveRowContext'
 
 gsap.registerPlugin(Flip)
 
@@ -35,6 +36,10 @@ export function pauseAllVideos() {
 
 interface Props {
   src: string
+  // True when this is the media item currently shown in its project's
+  // horizontal swiper — lets it register as the target for the Nav's mobile
+  // Play button, which lives outside this component's tree.
+  isCurrent?: boolean
 }
 
 function formatTime(seconds: number) {
@@ -44,7 +49,7 @@ function formatTime(seconds: number) {
   return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 
-export default function VideoPlayer({ src }: Props) {
+export default function VideoPlayer({ src, isCurrent = false }: Props) {
   // Where the player renders when collapsed, in its normal spot in the
   // scrolling strip — display: contents (see the .anchor rule) so it's
   // invisible to layout and doesn't affect the strip's sizing.
@@ -67,6 +72,7 @@ export default function VideoPlayer({ src }: Props) {
   // fullscreen, so the fullscreenchange listener knows to pause it on exit
   // without reacting to some other VideoPlayer's fullscreen change.
   const enteredFullscreenRef = useRef(false)
+  const { registerActiveVideoTrigger } = useActiveRow()
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(MOBILE_QUERY)
@@ -162,6 +168,15 @@ export default function VideoPlayer({ src }: Props) {
     // node is actually live instead of assuming it never changes.
   }, [videoEl])
 
+  // Registers this instance's fullscreen trigger with ActiveRowContext while
+  // it's the mobile slide currently being viewed, so the Nav's Play button
+  // (rendered elsewhere in the tree) can reach this exact <video>.
+  useEffect(() => {
+    if (!isMobile || !isCurrent || !videoEl) return
+    registerActiveVideoTrigger(enterFullscreenPlayback)
+    return () => registerActiveVideoTrigger(null)
+  }, [isMobile, isCurrent, videoEl])
+
   function handleSeek(e: React.ChangeEvent<HTMLInputElement>) {
     const video = videoEl
     if (!video) return
@@ -210,19 +225,15 @@ export default function VideoPlayer({ src }: Props) {
     }
   }
 
-  // On mobile, tapping the video hands playback to the device's native
-  // fullscreen video player instead of toggling play inline — just the
+  // Hands playback to the device's native fullscreen video player — just the
   // <video> itself, not the surrounding player/controls. iOS Safari has no
   // generic element Fullscreen API for this; only the video's own
-  // webkitEnterFullscreen opens its native fullscreen UI.
-  function handlePlayerClick() {
+  // webkitEnterFullscreen opens its native fullscreen UI. Shared by the
+  // in-player mobile tap handler below and by the Nav's Play button, which
+  // triggers this same instance via the registered context callback.
+  function enterFullscreenPlayback() {
     const video = videoEl
     if (!video) return
-
-    if (!isMobile) {
-      togglePlay()
-      return
-    }
 
     const iosVideo = video as HTMLVideoElement & { webkitEnterFullscreen?: () => void }
     if (typeof iosVideo.webkitEnterFullscreen === 'function') {
@@ -238,6 +249,16 @@ export default function VideoPlayer({ src }: Props) {
     if (video.paused) {
       video.play().catch(() => {})
     }
+  }
+
+  // On mobile, tapping the video enters fullscreen instead of toggling play inline.
+  function handlePlayerClick() {
+    if (!isMobile) {
+      togglePlay()
+      return
+    }
+
+    enterFullscreenPlayback()
   }
 
   const player = (

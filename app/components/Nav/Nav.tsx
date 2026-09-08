@@ -59,7 +59,7 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
   const pathname = usePathname()
   const { openPanel, setOpenPanel } = usePanel()
   const { unlocked: workUnlocked } = useWorkAccess()
-  const { activeRow } = useActiveRow()
+  const { activeRow, isVideoMobileSlide, playActiveVideo } = useActiveRow()
   const workAccessGranted = pathname === '/work' && workUnlocked
   // The logo only animates up on the homepage; elsewhere it's already in place
   const [logoReady, setLogoReady] = useState(pathname !== '/')
@@ -89,8 +89,19 @@ export default function Nav({ logo, reachOut, checkWork, description, info, mail
   // each render creates its own independent instance (own state/effects), but
   // the markup itself only needs to be written once.
   const descriptionEl = (
-    <div className={`${styles.nav__description} ${workAccessGranted ? styles.fadeOut : ''}`}>
-      {description && <p>{description}</p>}
+    <div className={styles.nav__description}>
+      {description && (
+        <p className={`${styles.nav__description__text} ${workAccessGranted ? styles.fadeOut : ''}`}>
+          {description}
+        </p>
+      )}
+      <button
+        type="button"
+        className={`${styles.nav__play} ${isVideoMobileSlide ? styles.visible : ''}`}
+        onClick={playActiveVideo}
+      >
+        Play film
+      </button>
     </div>
   )
 

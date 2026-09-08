@@ -1,0 +1,56 @@
+.columns {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  justify-content: space-between;
+
+  z-index: 9;
+
+  pointer-events: none;
+
+  &__left {
+    position: relative;
+    width: 350px;
+    height: 100%;
+
+    @media (max-width: 768px) {
+      width: 40%;
+    }
+  }
+
+  &__layer {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  &__layer1 {
+    mask-image: linear-gradient(270deg, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 16.6667%, rgb(255, 255, 255) 33.3333%, rgba(255, 255, 255, 0) 50%);
+    backdrop-filter: blur(0px);
+  }
+
+  &__layer2 {
+    mask-image: linear-gradient(270deg, rgba(255, 255, 255, 0) 16.6667%, rgb(255, 255, 255) 33.3333%, rgb(255, 255, 255) 50%, rgba(255, 255, 255, 0) 66.6667%);
+    backdrop-filter: blur(5px);
+  }
+
+  &__layer3 {
+    mask-image: linear-gradient(270deg, rgba(255, 255, 255, 0) 33.3333%, rgb(255, 255, 255) 50%, rgb(255, 255, 255) 66.6667%, rgba(255, 255, 255, 0) 83.3333%);
+    backdrop-filter: blur(10px);
+  }
+
+  &__layer4 {
+    mask-image: linear-gradient(270deg, rgba(255, 255, 255, 0) 50%, rgb(255, 255, 255) 66.6667%, rgb(255, 255, 255) 83.3333%, rgba(255, 255, 255, 0) 100%);
+    backdrop-filter: blur(15px);
+  }
+
+  &__layer5 {
+    mask-image: linear-gradient(270deg, rgba(255, 255, 255, 0) 66.6667%, rgb(255, 255, 255) 83.3333%, rgb(255, 255, 255) 100%, rgba(255, 255, 255, 0) 116.667%);
+    backdrop-filter: blur(20px);
+  }
+}

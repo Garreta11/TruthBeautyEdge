@@ -26,7 +26,7 @@ interface Props {
 // concurrently-live <video> elements it will decode; mounting every video in
 // every slide up front (as this used to) exhausts that cap after a few slide
 // changes and crashes the tab.
-function MediaCell({ item, active }: { item: MediaItem; active: boolean }) {
+function MediaCell({ item, active, isCurrent }: { item: MediaItem; active: boolean; isCurrent: boolean }) {
   if (item._type === 'mediaImage') {
     const src = urlFor(item.image).height(1200).auto('format').quality(75).url()
     return (
@@ -43,7 +43,7 @@ function MediaCell({ item, active }: { item: MediaItem; active: boolean }) {
     if (fileSrc) {
       return (
         <div className={styles.imageBlock}>
-          {active ? <VideoPlayer src={fileSrc} /> : <div className={styles.mediaPlaceholder} />}
+          {active ? <VideoPlayer src={fileSrc} isCurrent={isCurrent} /> : <div className={styles.mediaPlaceholder} />}
         </div>
       )
     }
@@ -70,6 +70,9 @@ function MediaCell({ item, active }: { item: MediaItem; active: boolean }) {
 function ProjectSlide({ project }: { project: OldProject }) {
   const slideRef = useRef<HTMLDivElement>(null)
   const [isNearViewport, setIsNearViewport] = useState(false)
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
+
+  const { setIsVideoMobileSlide } = useActiveRow()
 
   useEffect(() => {
     const el = slideRef.current
@@ -82,6 +85,15 @@ function ProjectSlide({ project }: { project: OldProject }) {
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
+
+  const logActiveMediaType = (swiper: any) => {
+    setCurrentMediaIndex(swiper.realIndex)
+
+    const activeItem = project.media[swiper.realIndex]
+    if (!activeItem) return
+
+    setIsVideoMobileSlide(activeItem._type === 'mediaVideo')
+  }
 
   return (
     <div ref={slideRef} className={styles.projectSlideObserver}>
@@ -96,10 +108,12 @@ function ProjectSlide({ project }: { project: OldProject }) {
         nested
         touchEventsTarget="container"
         modules={[Mousewheel, FreeMode, Keyboard]}
+        onSwiper={logActiveMediaType}
+        onSlideChange={logActiveMediaType}
       >
         {project.media.map((item, idx) => (
           <SwiperSlide className={styles['swiper-slide']} key={idx}>
-            <MediaCell key={`${item._key}-${idx}`} item={item} active={isNearViewport} />
+            <MediaCell key={`${item._key}-${idx}`} item={item} active={isNearViewport} isCurrent={idx === currentMediaIndex} />
           </SwiperSlide>
         ))}
       </Swiper>
@@ -110,7 +124,7 @@ function ProjectSlide({ project }: { project: OldProject }) {
 const NestedSwiper = ({projects}: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const activeIndexRef = useRef<number | null>(null)
-  const { setActiveRow } = useActiveRow()
+  const { setActiveRow, setIsVideoMobileSlide } = useActiveRow()
 
   // The outer Swiper loops, so `activeIndex` counts duplicated slides too.
   // `realIndex` is the one that maps back to the original `projects` array.
@@ -130,6 +144,7 @@ const NestedSwiper = ({projects}: Props) => {
 
     return () => {
       setActiveRow(null)
+      setIsVideoMobileSlide(false)
     }
   }, [])
 
