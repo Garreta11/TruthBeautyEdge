@@ -52,10 +52,17 @@ export function workAccessTransition(granted: boolean) {
 }
 
 export function homepageTransition(logoEl: Element | null, onLogoTop?: () => void) {
-  // Logo/Nav never unmount between routes, so a prior run's GSAP-set inline
-  // top/left/transform would otherwise persist and make this replay a no-op
-  // move (animating from its old end state back to that same end state).
-  // Clearing them lets the CSS .top-less (centered) state drive the "from".
+  // Logo/Nav never unmount between routes, so this can be re-triggered while
+  // a previous run is still animating (e.g. React effect re-firing, or a
+  // quick return to "/"). Kill any in-flight tweens on these targets first —
+  // otherwise two timelines fight over the same top/left/transform/opacity
+  // properties and the logo can end up skipping straight to its end state.
+  gsap.killTweensOf([logoEl, '[data-video-bg]', '[data-nav-els]', '[data-video-volume]'])
+
+  // A prior run's GSAP-set inline top/left/transform would otherwise persist
+  // and make this replay a no-op move (animating from its old end state back
+  // to that same end state). Clearing them lets the CSS .top-less (centered)
+  // state drive the "from".
   gsap.set(logoEl, { clearProps: 'top,left,transform' })
 
   const tl = gsap.timeline()
@@ -79,8 +86,11 @@ export function homepageTransition(logoEl: Element | null, onLogoTop?: () => voi
   tl.to(
     logoEl,
     {
-      top: 10,
-      left: 10,
+      // Explicit px units — a unitless value here inherits the *starting*
+      // value's unit (top starts at 50% while centered), which silently
+      // animated to "top: 10%" instead of "top: 10px".
+      top: '10px',
+      left: '10px',
       transform: 'translate(0, 0)',
       duration: 2,
       ease: 'power2.inOut',
@@ -102,6 +112,8 @@ export function homepageTransition(logoEl: Element | null, onLogoTop?: () => voi
     { opacity: '0.24', duration: 2, ease: 'power1.out' },
     '<'
   )
+
+  return tl
 }
 
 export function homepageTransitionOut(onComplete?: () => void) {

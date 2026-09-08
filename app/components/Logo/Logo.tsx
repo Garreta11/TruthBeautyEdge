@@ -23,7 +23,14 @@ export default function Logo({ url, alt, onTopComplete }: Props) {
   const imgRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
-    if (imgRef.current?.complete) setLoaded(true)
+    const img = imgRef.current
+    if (!img?.complete) return
+    // Image was already cached/decoded before this mount, so `onLoad` never
+    // fires (the load event already happened) — set ratio here too, or the
+    // container is stuck on the SCSS fallback aspect-ratio instead of the
+    // actual logo's.
+    if (img.naturalWidth && img.naturalHeight) setRatio(img.naturalWidth / img.naturalHeight)
+    setLoaded(true)
   }, [])
 
   function handleClick() {
@@ -45,8 +52,10 @@ export default function Logo({ url, alt, onTopComplete }: Props) {
 
   useEffect(() => {
     if (!isTop || !isHome) return
-    homepageTransition(containerRef.current, () => onTopComplete?.())
-
+    const tl = homepageTransition(containerRef.current, () => onTopComplete?.())
+    return () => {
+      tl?.kill()
+    }
   }, [isTop, isHome])
 
   return (
