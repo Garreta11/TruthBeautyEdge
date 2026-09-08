@@ -59,11 +59,11 @@ export function homepageTransition(logoEl: Element | null, onLogoTop?: () => voi
   gsap.set(logoEl, { clearProps: 'top,left,transform' })
 
   const tl = gsap.timeline()
-  tl.fromTo(
+  /* tl.fromTo(
     logoEl,
     { opacity: 0 },
     { opacity: 1, duration: 1, ease: 'power1.out' },
-  )
+  ) */
 
   tl.fromTo(
     '[data-video-bg]',
