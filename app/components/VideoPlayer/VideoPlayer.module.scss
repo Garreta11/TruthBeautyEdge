@@ -121,18 +121,28 @@
 }
 
 .time {
-  font-size: 0.75rem;
+  font-family: var(--font-biz-ud-mincho);
   white-space: nowrap;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
 }
 
 .trackWrapper {
-  position: relative;
+  position: absolute;
   flex: 1;
-  height: 2px;
+  height: 50px;
+  width: 100%;
+  left: 0px;
+  bottom: 0px;
+  z-index: -1;
 }
 
 // Faint baseline spanning the full duration
-.trackBase {
+/* .trackBase {
   position: absolute;
   top: 50%;
   left: 0;
@@ -142,17 +152,18 @@
   background: white;
   opacity: 0.1;
   pointer-events: none;
-}
+} */
 
 // Bolder fill showing how much has played, left-aligned under the baseline
 .trackProgress {
   position: absolute;
   top: 0;
   left: 0;
-  height: 2px;
-  background: white;
-  opacity: 0.3;
+  height: 100%;
+  background: #ffffff05;
   pointer-events: none;
+  backdrop-filter: blur(50px);
+  transition: all ease 0.2s;
 }
 
 .track {
@@ -189,25 +200,6 @@
     border: none;
     border-radius: 50%;
     background: white;
-  }
-}
-
-.fullscreen {
-  width: 18px;
-  height: 10px;
-  border-radius: 2px;
-  background: none;
-  border: none;
-  background: white;
-  opacity: 0.3;
-  cursor: pointer;
-  padding: 0;
-  font-size: 15px;
-  line-height: 1;
-  transition: var(--transition);
-
-  &:hover {
-    opacity: 1;
   }
 }
 

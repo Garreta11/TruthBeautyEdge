@@ -43,13 +43,20 @@
 
   &.play {
     svg {
-      scale: 2.5;
+      scale: 3.5;
+      path {
+        opacity: 1;
+      }
     }
   }
   
   &.pause {
     svg {
-      scale: 2.5;
+      scale: 3.5;
+
+      path {
+        opacity: 1;
+      }
     }
   }
 

@@ -276,10 +276,10 @@ export default function VideoPlayer({ src }: Props) {
         onMouseLeave={() => setOverControls(false)}
       >
         <div>
-        <p className={styles.time}>{formatTime(currentTime)} / {formatTime(duration)}</p>
         </div>
         <div className={styles.trackWrapper}>
-          <div className={styles.trackBase} />
+          {/* <div className={styles.trackBase} /> */}
+          <p className={styles.time}>{formatTime(currentTime)} / {formatTime(duration)}</p>
           <div
             className={styles.trackProgress}
             style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
@@ -294,10 +294,6 @@ export default function VideoPlayer({ src }: Props) {
             onChange={handleSeek}
           />
         </div>
-
-        <button className={styles.fullscreen} onClick={toggleExpand} aria-label="Expand">
-
-        </button>
       </div>
       </div>
     </>
