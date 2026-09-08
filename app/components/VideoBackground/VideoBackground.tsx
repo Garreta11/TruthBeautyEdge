@@ -89,6 +89,30 @@ export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileIn
     }
   }, [isWorkUnlocked, videoUrl])
 
+  // Safari's Low Power Mode (common on battery-conscious Macs/iPhones)
+  // silently blocks autoplay — even for muted/playsInline video — and shows
+  // its own native play button instead, regardless of any play() call made
+  // on mount. That block lifts as soon as the page gets a genuine user
+  // gesture, so retry play() on the first interaction anywhere on the page
+  // rather than leaving the visitor stuck on Safari's overlay.
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || isWorkUnlocked) return
+
+    const tryPlay = () => {
+      if (video.paused) video.play().catch(() => {})
+    }
+
+    const events: (keyof DocumentEventMap)[] = ['pointerdown', 'touchstart', 'keydown', 'scroll']
+    events.forEach((event) => document.addEventListener(event, tryPlay, { passive: true }))
+    document.addEventListener('visibilitychange', tryPlay)
+
+    return () => {
+      events.forEach((event) => document.removeEventListener(event, tryPlay))
+      document.removeEventListener('visibilitychange', tryPlay)
+    }
+  }, [isWorkUnlocked, videoUrl])
+
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
