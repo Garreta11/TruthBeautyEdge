@@ -12,6 +12,12 @@
 
   pointer-events: none;
 
+  // Nav (which renders the info Panel) is z-index: 10, so this already
+  // paints under it — .behind drops it further, below WorkOverlay (9) too.
+  &.behind {
+    z-index: 1;
+  }
+
   &__left {
     position: relative;
     width: 350px;
