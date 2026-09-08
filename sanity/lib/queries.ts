@@ -125,7 +125,7 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
         mail,
       },
       "logoUrl": logo.asset->url,
-      favicon,
+      "faviconUrl": favicon.asset->url,
       "backgroundVideoUrl": backgroundVideo.asset->url,
       "backgroundVideoMobileUrl": backgroundVideoMobile.asset->url,
       "whoWeAreImageUrl": whoWeAreImage.asset->url,

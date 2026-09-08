@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
+import { getSiteSettings } from '@/sanity/lib/queries'
 import './globals.scss'
 
 const neueHaas = localFont({
@@ -12,9 +13,14 @@ const bizUDMincho = localFont({
   variable: '--font-biz-ud-mincho',
 })
 
-export const metadata: Metadata = {
-  title: 'TruthBeautyEdge',
-  description: 'A system for creating obsession.',
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings()
+
+  return {
+    title: 'TruthBeautyEdge',
+    description: 'A system for creating obsession.',
+    icons: settings?.faviconUrl ? { icon: settings.faviconUrl } : undefined,
+  }
 }
 
 export const viewport: Viewport = {

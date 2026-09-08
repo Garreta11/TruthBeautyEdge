@@ -75,7 +75,7 @@ export interface SiteSettings {
     body?: PortableTextBlock
   }
   logoUrl?: string
-  favicon?: SanityImageSource
+  faviconUrl?: string
   backgroundVideoUrl?: string
   backgroundVideoMobileUrl?: string
   whoWeAreImageUrl?: string
