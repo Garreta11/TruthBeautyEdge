@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { useInteraction } from '@/app/context/InteractionContext'
 import { homepageTransition, workpageTransitionOut } from '@/app/(site)/animations'
 import styles from './Logo.module.scss'
 
@@ -16,7 +15,6 @@ export default function Logo({ url, alt, onTopComplete }: Props) {
   const pathname = usePathname()
   
   const router = useRouter()
-  const { hasInteracted } = useInteraction()
   const [loaded, setLoaded] = useState(false)
   const [ratio, setRatio] = useState<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -47,7 +45,7 @@ export default function Logo({ url, alt, onTopComplete }: Props) {
     }
   }
 
-  const isTop = hasInteracted || loaded
+  const isTop = loaded
   const isHome = pathname === '/'
 
   useEffect(() => {
