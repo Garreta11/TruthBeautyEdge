@@ -12,14 +12,15 @@ const VOLUME_FADE_MS = 1500
 interface Props {
   url: string
   mobileUrl?: string
-  infoImageUrl?: string
-  mobileInfoImageUrl?: string
+  infoVideoUrl?: string
+  mobileInfoVideoUrl?: string
 }
 
-export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileInfoImageUrl }: Props) {
+export default function VideoBackground({ url, mobileUrl, infoVideoUrl, mobileInfoVideoUrl }: Props) {
   const [muted, setMuted] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const infoVideoRef = useRef<HTMLVideoElement>(null)
   const fadeFrameRef = useRef<number | null>(null)
   const muteFadeFrameRef = useRef<number | null>(null)
   const pathname = usePathname()
@@ -29,6 +30,7 @@ export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileIn
   const isWorkUnlocked = isWork && unlocked
   const isHome = pathname === '/'
   const isWorkLocked = isWork && !unlocked
+  const isInfoOpen = openPanel === 'info'
   // The catcher only ever needs to do something when it can actually close a
   // panel — everywhere else it must stay click-through, or it silently
   // swallows every touch/click/scroll gesture on the page (it's a
@@ -37,7 +39,7 @@ export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileIn
   const catchesClicks = (isHome || isWorkLocked) && Boolean(openPanel)
 
   const videoUrl = isMobile && mobileUrl ? mobileUrl : url
-  const imageUrl = isMobile && mobileInfoImageUrl ? mobileInfoImageUrl : infoImageUrl
+  const infoVideoSrc = isMobile && mobileInfoVideoUrl ? mobileInfoVideoUrl : infoVideoUrl
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(MOBILE_QUERY)
@@ -164,6 +166,18 @@ export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileIn
     }
   }, [muted])
 
+  useEffect(() => {
+    const infoVideo = infoVideoRef.current
+    if (!infoVideo) return
+
+    if (isInfoOpen) {
+      infoVideo.currentTime = 0
+      infoVideo.play().catch(() => {})
+    } else {
+      infoVideo.pause()
+    }
+  }, [isInfoOpen, infoVideoSrc])
+
   function handleVideoClick() {
     if ((isHome || isWorkLocked) && openPanel) {
       setOpenPanel(null)
@@ -186,11 +200,15 @@ export default function VideoBackground({ url, mobileUrl, infoImageUrl, mobileIn
           playsInline
           preload="metadata"
         />
-        {imageUrl && (
-          <img
-            className={`${styles.infoImage} ${openPanel === 'info' ? styles.visible : ''}`}
-            src={imageUrl}
-            alt=""
+        {infoVideoSrc && (
+          <video
+            ref={infoVideoRef}
+            className={`${styles.infoVideo} ${isInfoOpen ? styles.visible : ''}`}
+            src={infoVideoSrc}
+            muted
+            loop
+            playsInline
+            preload="metadata"
           />
         )}
       </div>

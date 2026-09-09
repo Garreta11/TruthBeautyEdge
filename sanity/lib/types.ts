@@ -78,6 +78,6 @@ export interface SiteSettings {
   faviconUrl?: string
   backgroundVideoUrl?: string
   backgroundVideoMobileUrl?: string
-  whoWeAreImageUrl?: string
-  whoWeAreImageMobileUrl?: string
+  whoWeAreVideoUrl?: string
+  whoWeAreVideoMobileUrl?: string
 }

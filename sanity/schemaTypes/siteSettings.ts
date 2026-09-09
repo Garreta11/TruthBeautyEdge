@@ -41,16 +41,17 @@ export const siteSettings = defineType({
       options: { accept: 'video/*' },
     }),
     defineField({
-      name: 'whoWeAreImage',
-      title: 'Who We Are Image',
-      type: 'image',
-      options: { hotspot: true },
+      name: 'whoWeAreVideo',
+      title: 'Who We Are Video',
+      description: 'Video that plays when the info panel is opened',
+      type: 'file',
+      options: { accept: 'video/*' },
     }),
     defineField({
-      name: 'whoWeAreImageMobile',
-      title: 'Who We Are for Mobile',
-      type: 'image',
-      options: { hotspot: true },
+      name: 'whoWeAreVideoMobile',
+      title: 'Who We Are Video for Mobile',
+      type: 'file',
+      options: { accept: 'video/*' },
     }),
 
     // ─── Description ───────────────────────────────────────────────────────────
